@@ -51,6 +51,22 @@
             </div>
         </div>
 
+        <!-- View Toggle UI -->
+        <div class="view-controls">
+            <div class="view-toggle-group">
+                <button id="list-view-btn" class="view-btn active" aria-label="リスト表示" title="リスト表示">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+                    </svg>
+                </button>
+                <button id="grid-view-btn" class="view-btn" aria-label="グリッド表示" title="グリッド表示">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 3v8h8V3H3zm6 6H5V5h4v4zm-6 4v8h8v-8H3zm6 6H5v-4h4v4zm4-16v8h8V3h-8zm6 6h-4V5h4v4zm-6 4v8h8v-8h-8zm6 6h-4v-4h4v4z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
         <div class="tab-content">
             <div id="uragane-content" class="tab-panel active">
                 <div class="table-container">
@@ -72,6 +88,31 @@
                             <!-- Dynamic content will be loaded here -->
                         </tbody>
                     </table>
+                    <div class="pagination-container" id="uragane-pagination">
+                        <div class="pagination-info">
+                            <span id="uragane-page-info">1-10 of 46</span>
+                        </div>
+                        <div class="pagination-controls">
+                            <button class="pagination-btn prev-btn" id="uragane-prev" disabled>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                                </svg>
+                                前へ
+                            </button>
+                            <div class="page-numbers" id="uragane-page-numbers">
+                                <!-- Page numbers will be dynamically generated -->
+                            </div>
+                            <button class="pagination-btn next-btn" id="uragane-next">
+                                次へ
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-container" id="uragane-grid">
+                    <!-- Grid items will be dynamically populated -->
                 </div>
             </div>
 
@@ -92,6 +133,31 @@
                             <!-- Dynamic content will be loaded here -->
                         </tbody>
                     </table>
+                    <div class="pagination-container" id="tsubo-pagination">
+                        <div class="pagination-info">
+                            <span id="tsubo-page-info">1-10 of 33</span>
+                        </div>
+                        <div class="pagination-controls">
+                            <button class="pagination-btn prev-btn" id="tsubo-prev" disabled>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                                </svg>
+                                前へ
+                            </button>
+                            <div class="page-numbers" id="tsubo-page-numbers">
+                                <!-- Page numbers will be dynamically generated -->
+                            </div>
+                            <button class="pagination-btn next-btn" id="tsubo-next">
+                                次へ
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-container" id="tsubo-grid">
+                    <!-- Grid items will be dynamically populated -->
                 </div>
             </div>
         </div>
@@ -217,6 +283,13 @@
         let searchDebounceTimer = null;
         let currentData = [];
         let filteredData = [];
+        let currentView = 'list'; // 'list' or 'grid'
+
+        // Pagination state
+        const paginationState = {
+            uragane: { currentPage: 1, itemsPerPage: 10 },
+            tsubo: { currentPage: 1, itemsPerPage: 10 }
+        };
 
         // Wikipedia API functions
         async function getWikipediaThumbnail(name) {
@@ -319,8 +392,321 @@
                 return matchesSearch && matchesArea && matchesStatus;
             });
 
+            // Reset pagination to first page when filtering
+            paginationState[currentTab].currentPage = 1;
+
             updateStats();
-            renderTable();
+            renderCurrentView();
+        }
+
+        // Toggle between list and grid view
+        function toggleView(viewType) {
+            const listBtn = document.getElementById('list-view-btn');
+            const gridBtn = document.getElementById('grid-view-btn');
+
+            if (viewType === 'list' || (viewType === undefined && currentView === 'grid')) {
+                currentView = 'list';
+                listBtn.classList.add('active');
+                gridBtn.classList.remove('active');
+            } else {
+                currentView = 'grid';
+                gridBtn.classList.add('active');
+                listBtn.classList.remove('active');
+            }
+
+            renderCurrentView();
+        }        // Render current view (table or grid)
+        function renderCurrentView() {
+            if (currentView === 'list') {
+                showTableView();
+                renderTable();
+            } else {
+                showGridView();
+                renderGrid();
+            }
+        }
+
+        // Show table view
+        function showTableView() {
+            const tableContainer = document.querySelector(`#${currentTab}-content .table-container`);
+            const gridContainer = document.getElementById(`${currentTab}-grid`);
+
+            tableContainer.style.display = 'block';
+            gridContainer.classList.remove('active');
+        }
+
+        // Show grid view
+        function showGridView() {
+            const tableContainer = document.querySelector(`#${currentTab}-content .table-container`);
+            const gridContainer = document.getElementById(`${currentTab}-grid`);
+
+            tableContainer.style.display = 'none';
+            gridContainer.classList.add('active');
+        }
+
+        // Pagination functions
+        function getCurrentPageData() {
+            const state = paginationState[currentTab];
+            const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+            const endIndex = startIndex + state.itemsPerPage;
+            return filteredData.slice(startIndex, endIndex);
+        }
+
+        function getTotalPages() {
+            const state = paginationState[currentTab];
+            return Math.ceil(filteredData.length / state.itemsPerPage);
+        }
+
+        function updatePaginationInfo() {
+            const state = paginationState[currentTab];
+            const totalItems = filteredData.length;
+            const startItem = (state.currentPage - 1) * state.itemsPerPage + 1;
+            const endItem = Math.min(state.currentPage * state.itemsPerPage, totalItems);
+
+            const infoElement = document.getElementById(`${currentTab}-page-info`);
+            if (totalItems === 0) {
+                infoElement.textContent = '0件';
+            } else {
+                infoElement.textContent = `${startItem}-${endItem} / ${totalItems}件`;
+            }
+        }
+
+        function renderPaginationControls() {
+            const totalPages = getTotalPages();
+            const currentPage = paginationState[currentTab].currentPage;
+
+            // Update navigation buttons
+            const prevBtn = document.getElementById(`${currentTab}-prev`);
+            const nextBtn = document.getElementById(`${currentTab}-next`);
+
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+
+            // Generate page numbers
+            const pageNumbersContainer = document.getElementById(`${currentTab}-page-numbers`);
+            pageNumbersContainer.innerHTML = '';
+
+            if (totalPages <= 1) return;
+
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+            // Adjust if we're near the end
+            if (endPage - startPage < maxVisiblePages - 1) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+
+            // Add first page and ellipsis if needed
+            if (startPage > 1) {
+                pageNumbersContainer.appendChild(createPageButton(1));
+                if (startPage > 2) {
+                    pageNumbersContainer.appendChild(createEllipsis());
+                }
+            }
+
+            // Add page numbers
+            for (let i = startPage; i <= endPage; i++) {
+                pageNumbersContainer.appendChild(createPageButton(i));
+            }
+
+            // Add ellipsis and last page if needed
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    pageNumbersContainer.appendChild(createEllipsis());
+                }
+                pageNumbersContainer.appendChild(createPageButton(totalPages));
+            }
+        }
+
+        function createPageButton(pageNumber) {
+            const button = document.createElement('button');
+            button.className = 'page-number';
+            button.textContent = pageNumber;
+
+            if (pageNumber === paginationState[currentTab].currentPage) {
+                button.classList.add('active');
+            }
+
+            button.addEventListener('click', () => {
+                goToPage(pageNumber);
+            });
+
+            return button;
+        }
+
+        function createEllipsis() {
+            const span = document.createElement('span');
+            span.className = 'page-ellipsis';
+            span.textContent = '...';
+            return span;
+        }
+
+        function goToPage(pageNumber) {
+            paginationState[currentTab].currentPage = pageNumber;
+            renderCurrentView();
+        }
+
+        function goToPreviousPage() {
+            const state = paginationState[currentTab];
+            if (state.currentPage > 1) {
+                state.currentPage--;
+                renderCurrentView();
+            }
+        }
+
+        function goToNextPage() {
+            const state = paginationState[currentTab];
+            const totalPages = getTotalPages();
+            if (state.currentPage < totalPages) {
+                state.currentPage++;
+                renderCurrentView();
+            }
+        }        // Render grid view
+        function renderGrid() {
+            const gridContainer = document.getElementById(`${currentTab}-grid`);
+
+            // Clear existing content
+            gridContainer.innerHTML = '';
+
+            // Create grid items
+            const fragment = document.createDocumentFragment();
+
+            filteredData.forEach((item, index) => {
+                const gridItem = createGridItem(item, index);
+                fragment.appendChild(gridItem);
+            });
+
+            gridContainer.appendChild(fragment);
+        }
+
+        // Create grid item
+        function createGridItem(item, index) {
+            const gridItem = document.createElement('div');
+            gridItem.className = 'grid-item';
+            gridItem.style.animationDelay = `${Math.min(index * 30, 600)}ms`;
+
+            if (currentTab === 'uragane') {
+                gridItem.innerHTML = `
+                    <div class="grid-image-section">
+                        <div class="grid-main-thumbnail" data-name="${item.名前}">
+                            <div class="thumbnail-loading">📷</div>
+                        </div>
+                    </div>
+                    <div class="grid-content-section">
+                        <div class="grid-name-section">
+                            <div class="grid-thumbnail" data-name="${item.名前}">
+                                <div class="thumbnail-loading">📷</div>
+                            </div>
+                            <div class="grid-name-info">
+                                <div class="grid-name">${item.名前}</div>
+                                <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="grid-wiki-link">
+                                    📖 Wikipedia
+                                </a>
+                            </div>
+                        </div>
+                        <div class="grid-details">
+                            <div class="grid-detail-row">
+                                <span class="grid-detail-label">選挙区</span>
+                                <span class="grid-detail-value">${item.選挙区 || '-'}</span>
+                            </div>
+                            <div class="grid-detail-row">
+                                <span class="grid-detail-label">エリア</span>
+                                <span class="grid-detail-value">
+                                    <span class="grid-area-tag">${item.エリア || '-'}</span>
+                                </span>
+                            </div>
+                            <div class="grid-detail-row">
+                                <span class="grid-detail-label">裏金金額</span>
+                                <span class="grid-detail-value grid-amount">${item.裏金金額 || '-'}</span>
+                            </div>
+                            <div class="grid-detail-row">
+                                <span class="grid-detail-label">公認状況</span>
+                                <span class="grid-detail-value">
+                                    <span class="grid-status-badge grid-status-${item['公認・非公認']?.replace('・', '-')}">${item['公認・非公認'] || '-'}</span>
+                                </span>
+                            </div>
+                            <div class="grid-detail-row">
+                                <span class="grid-detail-label">党の処分</span>
+                                <span class="grid-detail-value">${item.党の処分 || '-'}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                gridItem.innerHTML = `
+                    <div class="grid-image-section">
+                        <div class="grid-main-thumbnail" data-name="${item.名前}">
+                            <div class="thumbnail-loading">📷</div>
+                        </div>
+                    </div>
+                    <div class="grid-content-section">
+                        <div class="grid-name-section">
+                            <div class="grid-thumbnail" data-name="${item.名前}">
+                                <div class="thumbnail-loading">📷</div>
+                            </div>
+                            <div class="grid-name-info">
+                                <div class="grid-name">${item.名前}</div>
+                                <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="grid-wiki-link">
+                                    📖 Wikipedia
+                                </a>
+                            </div>
+                        </div>
+                        <div class="grid-details">
+                            <div class="grid-detail-row">
+                                <span class="grid-detail-label">住所</span>
+                                <span class="grid-detail-value grid-address">${item.住所 || '-'}</span>
+                            </div>
+                            <div class="grid-detail-row">
+                                <span class="grid-detail-label">分類</span>
+                                <span class="grid-detail-value">
+                                    <span class="grid-category-badge">${item.分類 || '-'}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Load thumbnails asynchronously
+            setTimeout(() => {
+                loadThumbnailForGrid(gridItem, item.名前, index);
+            }, index * CONFIG.WIKIPEDIA_API_DELAY);
+
+            return gridItem;
+        }        // Load thumbnail for grid item
+        async function loadThumbnailForGrid(gridItem, name, index) {
+            const thumbnailContainers = gridItem.querySelectorAll('.grid-thumbnail, .grid-main-thumbnail');
+            if (!thumbnailContainers.length) return;
+
+            try {
+                const thumbnailUrl = await fetchThumbnailWithDelay(name, index * 50);
+
+                thumbnailContainers.forEach(container => {
+                    if (thumbnailUrl) {
+                        const img = document.createElement('img');
+                        img.src = thumbnailUrl;
+                        img.alt = `${name}の写真`;
+                        img.loading = 'lazy';
+
+                        img.onload = () => {
+                            container.innerHTML = '';
+                            container.appendChild(img);
+                        };
+
+                        img.onerror = () => {
+                            container.innerHTML = '<div class="thumbnail-error">📷</div>';
+                        };
+                    } else {
+                        container.innerHTML = '<div class="thumbnail-error">📷</div>';
+                    }
+                });
+            } catch (error) {
+                console.warn(`Failed to load thumbnail for ${name}:`, error);
+                thumbnailContainers.forEach(container => {
+                    container.innerHTML = '<div class="thumbnail-error">📷</div>';
+                });
+            }
         }
 
         // Update statistics
@@ -329,22 +715,29 @@
             document.getElementById('filtered-count').textContent = filteredData.length;
         }
 
-        // Render table with virtual scrolling for large datasets
+        // Render table with pagination
         function renderTable() {
             const tbody = document.getElementById(`${currentTab}-tbody`);
 
             // Clear existing content
             tbody.innerHTML = '';
 
+            // Get current page data
+            const pageData = getCurrentPageData();
+
             // Batch rendering for better performance
             const fragment = document.createDocumentFragment();
 
-            filteredData.forEach((item, index) => {
+            pageData.forEach((item, index) => {
                 const row = createTableRow(item, index);
                 fragment.appendChild(row);
             });
 
             tbody.appendChild(fragment);
+
+            // Update pagination controls
+            updatePaginationInfo();
+            renderPaginationControls();
         }
 
         // Create table row with thumbnail support
@@ -497,7 +890,7 @@
 
             updateFilterOptions();
             updateStats();
-            renderTable();
+            renderCurrentView();
             hideLoading();
         }
 
@@ -522,6 +915,20 @@
             document.querySelectorAll('.tab-button').forEach(button => {
                 button.addEventListener('click', (e) => {
                     switchTab(e.currentTarget.dataset.tab);
+                });
+            });
+
+            // View toggle functionality
+            document.getElementById('list-view-btn').addEventListener('click', () => toggleView('list'));
+            document.getElementById('grid-view-btn').addEventListener('click', () => toggleView('grid'));
+
+            // Pagination event listeners
+            ['uragane', 'tsubo'].forEach(tab => {
+                document.getElementById(`${tab}-prev`).addEventListener('click', () => {
+                    if (currentTab === tab) goToPreviousPage();
+                });
+                document.getElementById(`${tab}-next`).addEventListener('click', () => {
+                    if (currentTab === tab) goToNextPage();
                 });
             });
 
@@ -555,6 +962,10 @@
                             e.preventDefault();
                             searchInput.focus();
                             break;
+                        case 'g':
+                            e.preventDefault();
+                            toggleView();
+                            break;
                     }
                 }
             });
@@ -565,7 +976,7 @@
             filteredData = [...currentData];
             updateFilterOptions();
             updateStats();
-            renderTable();
+            renderCurrentView();
             hideLoading();
         }
 
@@ -772,6 +1183,72 @@
             font-size: 0.9rem;
         }
 
+        /* View Toggle Controls */
+        .view-controls {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 20;
+        }
+
+        .view-toggle-group {
+            display: flex;
+            gap: 4px;
+            background: var(--surface-color);
+            padding: 4px;
+            border-radius: var(--border-radius);
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .view-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: transparent;
+            border: none;
+            border-radius: calc(var(--border-radius) - 2px);
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .view-btn:hover {
+            background-color: #f1f5f9;
+            color: var(--text-primary);
+            transform: translateY(-1px);
+        }
+
+        .view-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .view-btn:active {
+            transform: translateY(0);
+        }
+
+        .view-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.1), transparent);
+            transition: left 0.3s ease;
+        }
+
+        .view-btn:hover::before {
+            left: 100%;
+        }
+
         /* Tab Content */
         .tab-content {
             position: relative;
@@ -789,6 +1266,341 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Grid View Styles */
+        .grid-container {
+            display: none;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            padding: 24px;
+            background-color: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .grid-container.active {
+            display: grid;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .grid-item {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 0;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: auto;
+            min-height: 400px;
+        }
+
+        .grid-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+
+        .grid-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .grid-item:hover::before {
+            opacity: 1;
+        }
+
+        .grid-image-section {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        }
+
+        .grid-main-thumbnail {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .grid-main-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            max-height: 200px;
+            transition: transform 0.3s ease;
+        }
+
+        .grid-item:hover .grid-main-thumbnail img {
+            transform: scale(1.05);
+        }
+
+        .grid-content-section {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grid-name-section {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .grid-thumbnail {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .grid-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .grid-name-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .grid-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            line-height: 1.3;
+            word-wrap: break-word;
+        }
+
+        .grid-wiki-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.85rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .grid-wiki-link:hover {
+            color: var(--primary-hover);
+            transform: translateX(2px);
+        }
+
+        .grid-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .grid-detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+        }
+
+        .grid-detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .grid-detail-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            min-width: 60px;
+        }
+
+        .grid-detail-value {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            text-align: right;
+            flex: 1;
+            margin-left: 8px;
+        }
+
+        .grid-amount {
+            color: var(--danger-color);
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .grid-address {
+            font-size: 0.8rem;
+            line-height: 1.4;
+            word-break: break-all;
+            max-width: 200px;
+        }
+
+        .grid-status-badge,
+        .grid-category-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .grid-status-公認 {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .grid-status-非公認 {
+            background-color: #fed7d7;
+            color: #9b2c2c;
+        }
+
+        .grid-status-無所属 {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+
+        .grid-category-badge {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .grid-area-tag {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* Pagination Styles */
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+            background-color: #fafbfc;
+        }
+
+        .pagination-info {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pagination-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background-color: #f8fafc;
+        }
+
+        .page-numbers {
+            display: flex;
+            gap: 4px;
+            margin: 0 8px;
+        }
+
+        .page-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .page-number:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .page-number.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .page-ellipsis {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
         /* Table Styles */
@@ -1055,6 +1867,95 @@
                 flex-direction: column;
             }
 
+            /* View Toggle Mobile */
+            .view-toggle-group {
+                gap: 2px;
+                padding: 2px;
+            }
+
+            .view-btn {
+                width: 40px;
+                height: 40px;
+            }
+
+            /* Grid Mobile */
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+                padding: 16px;
+            }
+
+            .grid-item {
+                min-height: 320px;
+            }
+
+            .grid-image-section {
+                height: 120px;
+            }
+
+            .grid-content-section {
+                padding: 12px;
+            }
+
+            .grid-name-section {
+                gap: 8px;
+                margin-bottom: 12px;
+                padding-bottom: 12px;
+            }
+
+            .grid-thumbnail {
+                width: 40px;
+                height: 40px;
+            }
+
+            .grid-name {
+                font-size: 0.95rem;
+            }
+
+            .grid-details {
+                gap: 8px;
+            }
+
+            .grid-detail-row {
+                padding: 6px 0;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .grid-detail-value {
+                text-align: left;
+                margin-left: 0;
+            }
+
+            .grid-address {
+                max-width: none;
+            }
+
+            /* Pagination Mobile */
+            .pagination-container {
+                flex-direction: column;
+                gap: 12px;
+                padding: 12px 16px;
+            }
+
+            .pagination-controls {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .pagination-btn {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+
+            .page-number {
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
+            }
+
+            /* Table Mobile */
             table {
                 font-size: 0.8rem;
             }
@@ -1095,6 +1996,61 @@
                 margin-bottom: 16px;
             }
 
+            /* View Toggle Small Mobile */
+            .view-controls {
+                margin-bottom: 12px;
+            }
+
+            .view-btn {
+                width: 36px;
+                height: 36px;
+            }
+
+            /* Grid Small Mobile */
+            .grid-container {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                padding: 12px;
+            }
+
+            .grid-item {
+                min-height: 300px;
+            }
+
+            .grid-image-section {
+                height: 100px;
+            }
+
+            .grid-content-section {
+                padding: 10px;
+            }
+
+            .grid-thumbnail {
+                width: 36px;
+                height: 36px;
+            }
+
+            .grid-name {
+                font-size: 0.9rem;
+            }
+
+            .grid-wiki-link {
+                font-size: 0.75rem;
+            }
+
+            /* Pagination Small Mobile */
+            .page-numbers {
+                gap: 2px;
+                margin: 0 4px;
+            }
+
+            .page-number {
+                width: 28px;
+                height: 28px;
+                font-size: 0.75rem;
+            }
+
+            /* Table Small Mobile */
             th, td {
                 padding: 8px 6px;
             }
@@ -1132,6 +2088,7 @@
             .search-container,
             .filter-container,
             .stats-container,
+            .view-controls,
             .loading-indicator,
             .error-message {
                 display: none !important;
@@ -1145,6 +2102,21 @@
             .table-container {
                 box-shadow: none;
                 border: 1px solid black;
+            }
+
+            .grid-container {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                box-shadow: none;
+                border: 1px solid black;
+                page-break-inside: avoid;
+            }
+
+            .grid-item {
+                border: 1px solid black;
+                page-break-inside: avoid;
+                margin-bottom: 10px;
             }
 
             table {
