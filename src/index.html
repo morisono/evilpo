@@ -9,20 +9,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <!-- Dark/Light Mode Toggle -->
-        <button id="theme-toggle" class="theme-toggle" aria-label="ダークモードとライトモードを切り替え" title="テーマを切り替え">
-            <div class="toggle-icon">
-                <svg class="sun-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
-                    <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <!-- Dark Mode Toggle -->
+    <button class="theme-toggle" id="theme-toggle" aria-label="テーマを切り替え" title="ダークモード/ライトモード切り替え">
+        <div class="theme-toggle-track">
+            <div class="theme-toggle-thumb">
+                <svg class="sun-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 17.5c3.038 0 5.5-2.462 5.5-5.5S15.038 6.5 12 6.5 6.5 8.962 6.5 12s2.462 5.5 5.5 5.5zM12 5V3m7.07 2.93l-1.41-1.41M19 12h2m-2.93 7.07l1.41-1.41M12 21v-2m-7.07-2.93l1.41 1.41M5 12H3m2.93-7.07l1.41 1.41z"/>
                 </svg>
-                <svg class="moon-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <svg class="moon-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
                 </svg>
             </div>
-        </button>
+        </div>
+    </button>
 
+    <div class="container">
         <header>
             <h1>議員データベース</h1>
             <p class="subtitle">裏金議員・壺議員の詳細情報</p>
@@ -338,11 +339,104 @@
         let filteredData = [];
         let currentView = 'list'; // 'list' or 'grid'
 
+        // Theme management
+        let currentTheme = 'dark'; // Default to dark mode
+
         // Pagination state
         const paginationState = {
             uragane: { currentPage: 1, itemsPerPage: 10 },
             tsubo: { currentPage: 1, itemsPerPage: 10 }
         };
+
+        // Theme functionality
+        function initTheme() {
+            // Add transition class to body for smooth theme changes
+            document.body.classList.add('theme-transition');
+
+            // Check for saved theme preference or default to dark mode
+            let savedTheme = localStorage.getItem('theme');
+
+            // If no saved preference, check system preference, but default to dark
+            if (!savedTheme) {
+                // Check system preference
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                    savedTheme = 'light';
+                } else {
+                    savedTheme = 'dark'; // Default to dark mode
+                }
+            }
+
+            currentTheme = savedTheme;
+
+            // Apply theme immediately
+            document.documentElement.setAttribute('data-theme', currentTheme);
+
+            // Set up theme toggle event listener
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', toggleTheme);
+
+                // Add keyboard support
+                themeToggle.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleTheme();
+                    }
+                });
+
+                // Set initial aria-label
+                const label = currentTheme === 'dark'
+                    ? 'ライトモードに切り替え'
+                    : 'ダークモードに切り替え';
+                themeToggle.setAttribute('aria-label', label);
+                themeToggle.setAttribute('title', label);
+            }
+
+            // Listen for system theme changes
+            if (window.matchMedia) {
+                const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+                mediaQuery.addEventListener('change', (e) => {
+                    // Only auto-switch if user hasn't manually set a preference
+                    if (!localStorage.getItem('theme')) {
+                        const newTheme = e.matches ? 'dark' : 'light';
+                        if (newTheme !== currentTheme) {
+                            currentTheme = newTheme;
+                            document.documentElement.setAttribute('data-theme', currentTheme);
+                            updateThemeToggleLabel();
+                        }
+                    }
+                });
+            }
+        }        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+            // Apply theme with smooth transition
+            document.documentElement.setAttribute('data-theme', currentTheme);
+
+            // Save preference
+            localStorage.setItem('theme', currentTheme);
+
+            // Update aria-label for accessibility
+            updateThemeToggleLabel();
+
+            // Dispatch custom event for other components
+            window.dispatchEvent(new CustomEvent('themeChanged', {
+                detail: { theme: currentTheme }
+            }));
+        }
+
+        function updateThemeToggleLabel() {
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                const label = currentTheme === 'dark'
+                    ? 'ライトモードに切り替え'
+                    : 'ダークモードに切り替え';
+                themeToggle.setAttribute('aria-label', label);
+                themeToggle.setAttribute('title', label);
+            }
+        }        function getTheme() {
+            return currentTheme;
+        }
 
         // Wikipedia API functions
         async function getWikipediaThumbnail(name) {
@@ -1282,6 +1376,9 @@
 
         // Initialize the application
         async function init() {
+            // Initialize theme first (before other UI elements)
+            initTheme();
+
             // Set up event listeners
             document.querySelectorAll('.tab-button').forEach(button => {
                 button.addEventListener('click', (e) => {
@@ -1379,6 +1476,350 @@
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
             --border-radius: 8px;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Dark Mode Variables */
+        [data-theme="dark"] {
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --success-color: #10b981;
+            --background-color: #0f172a;
+            --surface-color: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+        }
+
+        /* Theme Toggle Styles */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50px;
+            background-color: var(--surface-color);
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+
+        .theme-toggle:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgb(37 99 235 / 0.2);
+        }
+
+        .theme-toggle-track {
+            width: 60px;
+            height: 32px;
+            background: var(--border-color);
+            border-radius: 50px;
+            position: relative;
+            transition: var(--transition);
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .theme-toggle-track {
+            background: linear-gradient(135deg, #1e40af, #3730a3);
+        }
+
+        .theme-toggle-thumb {
+            width: 28px;
+            height: 28px;
+            background: var(--surface-color);
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+        }
+
+        [data-theme="dark"] .theme-toggle-thumb {
+            transform: translateX(28px);
+            background: #fbbf24;
+            border-color: #f59e0b;
+        }
+
+        .sun-icon {
+            color: #f59e0b;
+            transition: var(--transition);
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+        }
+
+        .moon-icon {
+            color: #64748b;
+            transition: var(--transition);
+            opacity: 0;
+            transform: scale(0.5) rotate(180deg);
+            position: absolute;
+        }
+
+        [data-theme="dark"] .sun-icon {
+            opacity: 0;
+            transform: scale(0.5) rotate(180deg);
+        }
+
+        [data-theme="dark"] .moon-icon {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+            color: #1e293b;
+        }
+
+        /* Ensure smooth theme transitions */
+        * {
+            transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                       border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                       color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Dark mode specific adjustments */
+        [data-theme="dark"] .trending-slider-container {
+            background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%);
+        }
+
+        [data-theme="dark"] .slider-card {
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        [data-theme="dark"] .slider-politician-image {
+            background: linear-gradient(135deg, #334155 0%, #475569 100%);
+        }
+
+        [data-theme="dark"] .grid-image-section {
+            background: linear-gradient(135deg, #334155 0%, #475569 100%);
+        }
+
+        [data-theme="dark"] .pagination-container {
+            background-color: var(--surface-color);
+        }
+
+        [data-theme="dark"] th {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        }
+
+        [data-theme="dark"] .data-row:nth-child(even) {
+            background-color: rgba(51, 65, 85, 0.3);
+        }
+
+        [data-theme="dark"] .data-row:hover {
+            background-color: rgba(51, 65, 85, 0.5);
+        }
+
+        [data-theme="dark"] .data-row:nth-child(even):hover {
+            background-color: rgba(51, 65, 85, 0.6);
+        }
+
+        [data-theme="dark"] .thumbnail-container,
+        [data-theme="dark"] .grid-thumbnail {
+            background-color: #334155;
+        }
+
+        [data-theme="dark"] .slider-area-tag {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        [data-theme="dark"] .grid-area-tag {
+            background-color: #1e40af;
+            color: #bfdbfe;
+        }
+
+        [data-theme="dark"] .area-tag {
+            background-color: #1e40af;
+            color: #bfdbfe;
+        }
+
+        [data-theme="dark"] .status-公認,
+        [data-theme="dark"] .grid-status-公認 {
+            background-color: #166534;
+            color: #bbf7d0;
+        }
+
+        [data-theme="dark"] .status-非公認,
+        [data-theme="dark"] .grid-status-非公認 {
+            background-color: #991b1b;
+            color: #fecaca;
+        }
+
+        [data-theme="dark"] .status-無所属,
+        [data-theme="dark"] .grid-status-無所属 {
+            background-color: #374151;
+            color: #d1d5db;
+        }
+
+        [data-theme="dark"] .category-badge,
+        [data-theme="dark"] .grid-category-badge {
+            background-color: #92400e;
+            color: #fde68a;
+        }
+
+        [data-theme="dark"] .error-message {
+            background-color: #7f1d1d;
+            border-color: #991b1b;
+            color: #fecaca;
+        }
+
+        [data-theme="dark"] .loading-indicator {
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .spinner {
+            border-color: var(--border-color);
+            border-top-color: var(--primary-color);
+        }
+
+        [data-theme="dark"] .thumbnail-loading,
+        [data-theme="dark"] .thumbnail-error {
+            color: var(--text-secondary);
+        }
+
+        [data-theme="dark"] .slider-loading {
+            color: rgba(241, 245, 249, 0.8);
+        }
+
+        [data-theme="dark"] .view-btn:hover {
+            background-color: #334155;
+        }
+
+        [data-theme="dark"] .tab-button:hover {
+            background-color: #334155;
+        }
+
+        [data-theme="dark"] #clear-search:hover {
+            background-color: #334155;
+        }
+
+        [data-theme="dark"] .page-number:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        [data-theme="dark"] .pagination-btn:hover:not(:disabled) {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        /* Focus indicators for dark mode */
+        [data-theme="dark"] .theme-toggle:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgb(59 130 246 / 0.3);
+        }
+
+        [data-theme="dark"] #search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgb(59 130 246 / 0.2);
+        }
+
+        [data-theme="dark"] .filter-container select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgb(59 130 246 / 0.2);
+        }
+
+        /* Ensure proper contrast for text in dark mode */
+        [data-theme="dark"] .wiki-link {
+            color: #60a5fa;
+        }
+
+        [data-theme="dark"] .wiki-link:hover {
+            color: #93c5fd;
+        }
+
+        [data-theme="dark"] .grid-wiki-link {
+            color: #60a5fa;
+        }
+
+        [data-theme="dark"] .grid-wiki-link:hover {
+            color: #93c5fd;
+        }
+
+        /* Better visibility for input placeholders in dark mode */
+        [data-theme="dark"] #search-input::placeholder {
+            color: #64748b;
+            opacity: 1;
+        }
+
+        /* Smooth theme transition class */
+        .theme-transition {
+            transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                       border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                       color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                       box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        /* Responsive theme toggle */
+        @media (max-width: 768px) {
+            .theme-toggle {
+                top: 15px;
+                right: 15px;
+            }
+
+            .theme-toggle-track {
+                width: 50px;
+                height: 28px;
+            }
+
+            .theme-toggle-thumb {
+                width: 24px;
+                height: 24px;
+            }
+
+            [data-theme="dark"] .theme-toggle-thumb {
+                transform: translateX(22px);
+            }
+
+            .sun-icon,
+            .moon-icon {
+                width: 14px;
+                height: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+            }
+
+            .theme-toggle-track {
+                width: 45px;
+                height: 25px;
+            }
+
+            .theme-toggle-thumb {
+                width: 21px;
+                height: 21px;
+            }
+
+            [data-theme="dark"] .theme-toggle-thumb {
+                transform: translateX(20px);
+            }
+
+            .sun-icon,
+            .moon-icon {
+                width: 12px;
+                height: 12px;
+            }
         }
 
         * {
