@@ -10,10 +10,51 @@
 </head>
 <body>
     <div class="container">
+        <!-- Dark/Light Mode Toggle -->
+        <button id="theme-toggle" class="theme-toggle" aria-label="ダークモードとライトモードを切り替え" title="テーマを切り替え">
+            <div class="toggle-icon">
+                <svg class="sun-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+                    <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <svg class="moon-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        </button>
+
         <header>
             <h1>議員データベース</h1>
             <p class="subtitle">裏金議員・壺議員の詳細情報</p>
         </header>
+
+        <!-- Trending Politicians Slider -->
+        <div class="trending-slider-container">
+            <div class="trending-header">
+                <h2>🔥 注目の議員 TOP 10</h2>
+                <p>裏金金額上位ランキング</p>
+            </div>
+            <div class="trending-slider">
+                <button class="slider-arrow slider-arrow-left" aria-label="前へ">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                    </svg>
+                </button>
+                <div class="slider-track">
+                    <div class="slider-items" id="trending-slider-items">
+                        <!-- Dynamic content will be loaded here -->
+                    </div>
+                </div>
+                <button class="slider-arrow slider-arrow-right" aria-label="次へ">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="slider-indicators" id="slider-indicators">
+                <!-- Indicators will be dynamically generated -->
+            </div>
+        </div>
 
         <nav class="tab-navigation">
             <button class="tab-button active" data-tab="uragane" aria-selected="true">
@@ -261,6 +302,18 @@
             ]
         };
 
+        // Trending slider state
+        let trendingSlider = {
+            currentIndex: 0,
+            itemsPerView: 2,
+            isAutoPlaying: false,
+            autoPlayInterval: null,
+            isDragging: false,
+            startX: 0,
+            currentX: 0,
+            data: []
+        };
+
         // Data cache for performance
         const dataCache = {
             uragane: null,
@@ -348,6 +401,324 @@
             }
             if (currentItem) result.push(currentItem);
             return result;
+        }
+
+        // Trending Slider Functions
+        function parseAmount(amountStr) {
+            if (!amountStr) return 0;
+            const numStr = amountStr.replace(/[万円]/g, '');
+            return parseFloat(numStr) || 0;
+        }
+
+        function getTop10Politicians() {
+            const sortedData = [...embeddedData.uragane].sort((a, b) => {
+                return parseAmount(b.裏金金額) - parseAmount(a.裏金金額);
+            });
+            return sortedData.slice(0, 10);
+        }
+
+        function updateSliderPosition() {
+            const sliderItems = document.getElementById('trending-slider-items');
+            const totalItems = trendingSlider.data.length;
+            const maxIndex = Math.max(0, totalItems - trendingSlider.itemsPerView);
+
+            // Ensure current index is within bounds
+            trendingSlider.currentIndex = Math.max(0, Math.min(trendingSlider.currentIndex, maxIndex));
+
+            const translateX = -(trendingSlider.currentIndex * (100 / trendingSlider.itemsPerView));
+            sliderItems.style.transform = `translateX(${translateX}%)`;
+
+            updateSliderControls();
+            updateSliderIndicators();
+        }
+
+        function updateSliderControls() {
+            const leftArrow = document.querySelector('.slider-arrow-left');
+            const rightArrow = document.querySelector('.slider-arrow-right');
+            const totalItems = trendingSlider.data.length;
+            const maxIndex = Math.max(0, totalItems - trendingSlider.itemsPerView);
+
+            if (leftArrow) leftArrow.disabled = trendingSlider.currentIndex <= 0;
+            if (rightArrow) rightArrow.disabled = trendingSlider.currentIndex >= maxIndex;
+        }
+
+        function updateSliderIndicators() {
+            const indicators = document.querySelectorAll('.slider-indicator');
+            const totalPages = Math.ceil(trendingSlider.data.length / trendingSlider.itemsPerView);
+            const currentPage = Math.floor(trendingSlider.currentIndex / trendingSlider.itemsPerView);
+
+            indicators.forEach((indicator, index) => {
+                indicator.classList.toggle('active', index === currentPage);
+            });
+        }
+
+        function nextSlide() {
+            const totalItems = trendingSlider.data.length;
+            const maxIndex = Math.max(0, totalItems - trendingSlider.itemsPerView);
+
+            if (trendingSlider.currentIndex < maxIndex) {
+                trendingSlider.currentIndex += trendingSlider.itemsPerView;
+                updateSliderPosition();
+            }
+        }
+
+        function prevSlide() {
+            if (trendingSlider.currentIndex > 0) {
+                trendingSlider.currentIndex -= trendingSlider.itemsPerView;
+                updateSliderPosition();
+            }
+        }
+
+        function goToSlide(slideIndex) {
+            const totalItems = trendingSlider.data.length;
+            const maxIndex = Math.max(0, totalItems - trendingSlider.itemsPerView);
+            trendingSlider.currentIndex = Math.max(0, Math.min(slideIndex * trendingSlider.itemsPerView, maxIndex));
+            updateSliderPosition();
+        }
+
+        function startAutoPlay() {
+            if (trendingSlider.isAutoPlaying) return;
+
+            trendingSlider.isAutoPlaying = true;
+            trendingSlider.autoPlayInterval = setInterval(() => {
+                const totalItems = trendingSlider.data.length;
+                const maxIndex = Math.max(0, totalItems - trendingSlider.itemsPerView);
+
+                if (trendingSlider.currentIndex >= maxIndex) {
+                    trendingSlider.currentIndex = 0;
+                } else {
+                    trendingSlider.currentIndex += trendingSlider.itemsPerView;
+                }
+                updateSliderPosition();
+            }, 4000);
+        }
+
+        function stopAutoPlay() {
+            if (!trendingSlider.isAutoPlaying) return;
+
+            trendingSlider.isAutoPlaying = false;
+            if (trendingSlider.autoPlayInterval) {
+                clearInterval(trendingSlider.autoPlayInterval);
+                trendingSlider.autoPlayInterval = null;
+            }
+        }
+
+        // Touch/Swipe functionality
+        function handleTouchStart(e) {
+            if (trendingSlider.isDragging) return;
+
+            trendingSlider.isDragging = true;
+            trendingSlider.startX = e.touches ? e.touches[0].clientX : e.clientX;
+            trendingSlider.currentX = trendingSlider.startX;
+
+            stopAutoPlay();
+
+            const sliderItems = document.getElementById('trending-slider-items');
+            sliderItems.classList.add('dragging');
+        }
+
+        function handleTouchMove(e) {
+            if (!trendingSlider.isDragging) return;
+
+            e.preventDefault();
+            trendingSlider.currentX = e.touches ? e.touches[0].clientX : e.clientX;
+        }
+
+        function handleTouchEnd(e) {
+            if (!trendingSlider.isDragging) return;
+
+            trendingSlider.isDragging = false;
+
+            const sliderItems = document.getElementById('trending-slider-items');
+            sliderItems.classList.remove('dragging');
+
+            const deltaX = trendingSlider.currentX - trendingSlider.startX;
+            const threshold = 50;
+
+            if (Math.abs(deltaX) > threshold) {
+                if (deltaX > 0) {
+                    prevSlide();
+                } else {
+                    nextSlide();
+                }
+            }
+
+            // Restart autoplay after a delay
+            setTimeout(() => {
+                if (!trendingSlider.isDragging) {
+                    startAutoPlay();
+                }
+            }, 2000);
+        }
+
+        async function loadSliderThumbnail(container, name, index) {
+            try {
+                const thumbnailUrl = await fetchThumbnailWithDelay(name, index * 100);
+
+                if (thumbnailUrl) {
+                    const img = document.createElement('img');
+                    img.src = thumbnailUrl;
+                    img.alt = `${name}の写真`;
+                    img.loading = 'lazy';
+
+                    img.onload = () => {
+                        container.innerHTML = '';
+                        container.appendChild(img);
+                    };
+
+                    img.onerror = () => {
+                        container.innerHTML = '<div class="thumbnail-error">📷</div>';
+                    };
+                } else {
+                    container.innerHTML = '<div class="thumbnail-error">📷</div>';
+                }
+            } catch (error) {
+                console.warn(`Failed to load slider thumbnail for ${name}:`, error);
+                container.innerHTML = '<div class="thumbnail-error">📷</div>';
+            }
+        }
+
+        function renderTrendingSlider() {
+            const sliderContainer = document.getElementById('trending-slider-items');
+            const indicatorsContainer = document.getElementById('slider-indicators');
+
+            if (!sliderContainer || !indicatorsContainer) return;
+
+            // Show loading state
+            sliderContainer.innerHTML = '<div class="slider-loading">データを読み込み中...</div>';
+
+            trendingSlider.data = getTop10Politicians();
+
+            // Clear containers
+            sliderContainer.innerHTML = '';
+            indicatorsContainer.innerHTML = '';
+
+            // Create slider items
+            trendingSlider.data.forEach((politician, index) => {
+                const sliderItem = document.createElement('div');
+                sliderItem.className = 'slider-item';
+
+                sliderItem.innerHTML = `
+                    <div class="slider-card" onclick="window.open('https://ja.wikipedia.org/wiki/${encodeURIComponent(politician.名前)}', '_blank')">
+                        <div class="slider-rank-badge">${index + 1}</div>
+                        <div class="slider-image-section">
+                            <div class="slider-politician-image" data-name="${politician.名前}">
+                                <div class="thumbnail-loading">📷</div>
+                            </div>
+                        </div>
+                        <div class="slider-content">
+                            <div class="slider-name">${politician.名前}</div>
+                            <div class="slider-amount">${politician.裏金金額}</div>
+                            <div class="slider-details">
+                                <div class="slider-detail-row">
+                                    <span class="slider-detail-label">選挙区</span>
+                                    <span class="slider-detail-value">${politician.選挙区}</span>
+                                </div>
+                                <div class="slider-detail-row">
+                                    <span class="slider-detail-label">エリア</span>
+                                    <span class="slider-detail-value">
+                                        <span class="slider-area-tag">${politician.エリア}</span>
+                                    </span>
+                                </div>
+                                <div class="slider-detail-row">
+                                    <span class="slider-detail-label">公認状況</span>
+                                    <span class="slider-detail-value">
+                                        <span class="slider-status-badge slider-status-${politician['公認・非公認']?.replace('・', '-')}">${politician['公認・非公認']}</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                sliderContainer.appendChild(sliderItem);
+
+                // Load thumbnail asynchronously
+                setTimeout(() => {
+                    const imageContainer = sliderItem.querySelector('.slider-politician-image');
+                    loadSliderThumbnail(imageContainer, politician.名前, index);
+                }, index * CONFIG.WIKIPEDIA_API_DELAY);
+            });
+
+            // Create indicators
+            const totalPages = Math.ceil(trendingSlider.data.length / trendingSlider.itemsPerView);
+            for (let i = 0; i < totalPages; i++) {
+                const indicator = document.createElement('div');
+                indicator.className = 'slider-indicator';
+                indicator.addEventListener('click', () => goToSlide(i));
+                indicatorsContainer.appendChild(indicator);
+            }
+
+            // Update responsive items per view
+            updateResponsiveSlider();
+            updateSliderPosition();
+        }
+
+        function updateResponsiveSlider() {
+            const isMobile = window.innerWidth <= 768;
+            trendingSlider.itemsPerView = isMobile ? 1 : 2;
+
+            // Update indicators
+            const indicatorsContainer = document.getElementById('slider-indicators');
+            if (indicatorsContainer) {
+                indicatorsContainer.innerHTML = '';
+                const totalPages = Math.ceil(trendingSlider.data.length / trendingSlider.itemsPerView);
+                for (let i = 0; i < totalPages; i++) {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'slider-indicator';
+                    indicator.addEventListener('click', () => goToSlide(i));
+                    indicatorsContainer.appendChild(indicator);
+                }
+            }
+        }
+
+        function initTrendingSlider() {
+            // Render the slider
+            renderTrendingSlider();
+
+            // Add event listeners
+            const leftArrow = document.querySelector('.slider-arrow-left');
+            const rightArrow = document.querySelector('.slider-arrow-right');
+            const sliderTrack = document.querySelector('.slider-track');
+
+            if (leftArrow) leftArrow.addEventListener('click', prevSlide);
+            if (rightArrow) rightArrow.addEventListener('click', nextSlide);
+
+            // Touch/mouse events for swiping
+            if (sliderTrack) {
+                // Touch events
+                sliderTrack.addEventListener('touchstart', handleTouchStart, { passive: false });
+                sliderTrack.addEventListener('touchmove', handleTouchMove, { passive: false });
+                sliderTrack.addEventListener('touchend', handleTouchEnd);
+
+                // Mouse events for desktop
+                sliderTrack.addEventListener('mousedown', handleTouchStart);
+                sliderTrack.addEventListener('mousemove', handleTouchMove);
+                sliderTrack.addEventListener('mouseup', handleTouchEnd);
+                sliderTrack.addEventListener('mouseleave', handleTouchEnd);
+            }
+
+            // Pause autoplay on hover
+            const sliderContainer = document.querySelector('.trending-slider-container');
+            if (sliderContainer) {
+                sliderContainer.addEventListener('mouseenter', stopAutoPlay);
+                sliderContainer.addEventListener('mouseleave', () => {
+                    setTimeout(() => {
+                        if (!trendingSlider.isDragging) {
+                            startAutoPlay();
+                        }
+                    }, 1000);
+                });
+            }
+
+            // Handle window resize
+            window.addEventListener('resize', debounce(() => {
+                updateResponsiveSlider();
+                updateSliderPosition();
+            }, 250));
+
+            // Start autoplay
+            setTimeout(startAutoPlay, 2000);
         }
 
         // Fetch data with embedded fallback
@@ -970,6 +1341,9 @@
                 }
             });
 
+            // Initialize trending slider
+            initTrendingSlider();
+
             // Load initial data
             showLoading();
             currentData = await fetchData('uragane');
@@ -1038,6 +1412,423 @@
             font-weight: 700;
             color: var(--text-primary);
             margin-bottom: 8px;
+        }
+
+        /* Trending Politicians Slider */
+        .trending-slider-container {
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .trending-slider-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+            pointer-events: none;
+        }
+
+        .trending-header {
+            text-align: center;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .trending-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .trending-header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .trending-slider {
+            position: relative;
+            max-width: 100%;
+            overflow: hidden;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .slider-track {
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slider-items {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform;
+        }
+
+        .slider-item {
+            flex: 0 0 50%;
+            padding: 16px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .slider-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            height: 280px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .slider-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .slider-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+            background-size: 300% 100%;
+            animation: gradientMove 3s ease-in-out infinite;
+        }
+
+        @keyframes gradientMove {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .slider-image-section {
+            position: relative;
+            height: 120px;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        }
+
+        .slider-politician-image {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slider-politician-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            max-height: 120px;
+            transition: transform 0.3s ease;
+            filter: brightness(1.1) contrast(1.1);
+        }
+
+        .slider-card:hover .slider-politician-image img {
+            transform: scale(1.05);
+        }
+
+        .slider-rank-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(238, 90, 36, 0.4);
+            z-index: 2;
+        }
+
+        .slider-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slider-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .slider-amount {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #dc2626;
+            margin-bottom: 8px;
+            text-shadow: 0 1px 2px rgba(220, 38, 38, 0.2);
+        }
+
+        .slider-details {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: auto;
+        }
+
+        .slider-detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .slider-detail-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .slider-detail-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .slider-area-tag {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .slider-status-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .slider-status-公認 {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .slider-status-非公認 {
+            background-color: #fed7d7;
+            color: #9b2c2c;
+        }
+
+        .slider-status-無所属 {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+
+        .slider-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .slider-arrow:hover {
+            background: white;
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .slider-arrow:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .slider-arrow-left {
+            left: 16px;
+        }
+
+        .slider-arrow-right {
+            right: 16px;
+        }
+
+        .slider-arrow:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: translateY(-50%) scale(0.9);
+        }
+
+        .slider-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .slider-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .slider-indicator.active {
+            background: white;
+            transform: scale(1.2);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+        }
+
+        .slider-indicator:hover {
+            background: rgba(255, 255, 255, 0.7);
+            transform: scale(1.1);
+        }
+
+        .slider-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        .slider-loading::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 12px;
+        }
+
+        /* Touch/Swipe Support */
+        .slider-track {
+            touch-action: pan-y;
+            user-select: none;
+        }
+
+        .slider-items.dragging {
+            transition: none;
+        }
+
+        /* Responsive Design for Slider */
+        @media (max-width: 768px) {
+            .trending-slider-container {
+                margin-bottom: 24px;
+                padding: 16px;
+            }
+
+            .trending-header h2 {
+                font-size: 1.4rem;
+            }
+
+            .trending-header p {
+                font-size: 0.9rem;
+            }
+
+            .slider-item {
+                flex: 0 0 100%;
+                padding: 8px;
+            }
+
+            .slider-card {
+                height: 240px;
+                padding: 16px;
+            }
+
+            .slider-image-section {
+                height: 80px;
+                margin-bottom: 12px;
+            }
+
+            .slider-name {
+                font-size: 1rem;
+            }
+
+            .slider-amount {
+                font-size: 1.2rem;
+            }
+
+            .slider-arrow {
+                width: 40px;
+                height: 40px;
+            }
+
+            .slider-arrow-left {
+                left: 8px;
+            }
+
+            .slider-arrow-right {
+                right: 8px;
+            }
+
+            .slider-detail-row {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .slider-card {
+                height: 220px;
+                padding: 12px;
+            }
+
+            .slider-image-section {
+                height: 70px;
+            }
+
+            .slider-name {
+                font-size: 0.9rem;
+            }
+
+            .slider-amount {
+                font-size: 1.1rem;
+            }
+
+            .slider-rank-badge {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8rem;
+            }
         }
 
         .subtitle {
