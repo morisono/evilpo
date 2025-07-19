@@ -9,6 +9,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Warning Dialog -->
+    <div id="warning-dialog" class="warning-overlay" style="display: none;">
+        <div class="warning-dialog">
+            <div class="warning-header">
+                <div class="warning-icon">⚠️</div>
+                <h2 class="warning-title">WARNING</h2>
+                <div class="warning-icon">⚠️</div>
+            </div>
+            <div class="warning-content">
+                <p class="warning-message">This website contains adult content intended for mature audiences. By continuing, you confirm you are at least 18 years old.</p>
+            </div>
+            <div class="warning-actions">
+                <button id="warning-continue" class="warning-btn warning-btn-continue">Continue</button>
+                <button id="warning-normal-mode" class="warning-btn warning-btn-normal">Switch to Normal Mode</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Dark Mode Toggle -->
     <button class="theme-toggle" id="theme-toggle" aria-label="テーマを切り替え" title="ダークモード/ライトモード切り替え">
         <div class="theme-toggle-track">
@@ -1374,8 +1392,115 @@
             hideLoading();
         }
 
+        // Warning Dialog Functions
+        function checkFirstVisit() {
+            const warningAccepted = sessionStorage.getItem('warningAccepted');
+            return !warningAccepted;
+        }
+
+        function showWarningDialog() {
+            const warningDialog = document.getElementById('warning-dialog');
+            if (warningDialog) {
+                warningDialog.style.display = 'flex';
+
+                // Prevent scrolling of background content
+                document.body.style.overflow = 'hidden';
+
+                // Focus management for accessibility
+                const continueBtn = document.getElementById('warning-continue');
+                if (continueBtn) {
+                    continueBtn.focus();
+                }
+            }
+        }
+
+        function hideWarningDialog() {
+            const warningDialog = document.getElementById('warning-dialog');
+            if (warningDialog) {
+                warningDialog.style.display = 'none';
+
+                // Restore scrolling
+                document.body.style.overflow = '';
+
+                // Mark as accepted for this session
+                sessionStorage.setItem('warningAccepted', 'true');
+            }
+        }
+
+        function initWarningDialog() {
+            const continueBtn = document.getElementById('warning-continue');
+            const normalModeBtn = document.getElementById('warning-normal-mode');
+            const warningDialog = document.getElementById('warning-dialog');
+
+            if (continueBtn) {
+                continueBtn.addEventListener('click', () => {
+                    hideWarningDialog();
+                    // Continue with dark theme (current theme)
+                });
+            }
+
+            if (normalModeBtn) {
+                normalModeBtn.addEventListener('click', () => {
+                    hideWarningDialog();
+                    // Switch to light theme
+                    if (currentTheme === 'dark') {
+                        toggleTheme();
+                    }
+                });
+            }
+
+            // Close dialog with Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && warningDialog && warningDialog.style.display === 'flex') {
+                    e.preventDefault();
+                    hideWarningDialog();
+                }
+            });
+
+            // Prevent clicking outside to close (modal behavior)
+            if (warningDialog) {
+                warningDialog.addEventListener('click', (e) => {
+                    // Only close if clicking on the overlay, not the dialog content
+                    if (e.target === warningDialog) {
+                        hideWarningDialog();
+                    }
+                });
+            }
+
+            // Tab trap for accessibility
+            if (warningDialog) {
+                warningDialog.addEventListener('keydown', (e) => {
+                    if (e.key === 'Tab') {
+                        const focusableElements = warningDialog.querySelectorAll('button');
+                        const firstElement = focusableElements[0];
+                        const lastElement = focusableElements[focusableElements.length - 1];
+
+                        if (e.shiftKey) {
+                            if (document.activeElement === firstElement) {
+                                e.preventDefault();
+                                lastElement.focus();
+                            }
+                        } else {
+                            if (document.activeElement === lastElement) {
+                                e.preventDefault();
+                                firstElement.focus();
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
         // Initialize the application
         async function init() {
+            // Initialize warning dialog first
+            initWarningDialog();
+
+            // Check if this is a first visit and show warning dialog if needed
+            if (checkFirstVisit()) {
+                showWarningDialog();
+            }
+
             // Initialize theme first (before other UI elements)
             initTheme();
 
@@ -3391,6 +3516,236 @@
                 animation-duration: 0.01ms !important;
                 animation-iteration-count: 1 !important;
                 transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Warning Dialog Styles */
+        .warning-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .warning-dialog {
+            background: #1a0f0f;
+            border: 2px solid #dc2626;
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            margin: 0 auto;
+            box-shadow: 0 20px 40px rgba(220, 38, 38, 0.4);
+            animation: slideIn 0.4s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .warning-dialog::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #dc2626, #ef4444, #f87171);
+            background-size: 300% 100%;
+            animation: gradientPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes gradientPulse {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .warning-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .warning-icon {
+            font-size: 2rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .warning-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #dc2626;
+            text-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+            letter-spacing: 2px;
+            margin: 0;
+        }
+
+        .warning-content {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .warning-message {
+            color: #fecaca;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .warning-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .warning-btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 200px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .warning-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .warning-btn:hover::before {
+            left: 100%;
+        }
+
+        .warning-btn-continue {
+            background: #dc2626;
+            color: white;
+            border: 2px solid #dc2626;
+        }
+
+        .warning-btn-continue:hover {
+            background: #b91c1c;
+            border-color: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+        }
+
+        .warning-btn-normal {
+            background: transparent;
+            color: #fecaca;
+            border: 2px solid #450a0a;
+        }
+
+        .warning-btn-normal:hover {
+            background: #450a0a;
+            border-color: #7f1d1d;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(69, 10, 10, 0.4);
+        }
+
+        .warning-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.3);
+        }
+
+        /* Mobile responsiveness for warning dialog */
+        @media (max-width: 768px) {
+            .warning-dialog {
+                padding: 30px 24px;
+                margin: 20px;
+            }
+
+            .warning-title {
+                font-size: 2rem;
+            }
+
+            .warning-icon {
+                font-size: 1.5rem;
+            }
+
+            .warning-message {
+                font-size: 1rem;
+            }
+
+            .warning-btn {
+                padding: 14px 24px;
+                font-size: 0.9rem;
+                min-width: 180px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .warning-dialog {
+                padding: 24px 20px;
+                margin: 16px;
+            }
+
+            .warning-title {
+                font-size: 1.8rem;
+                letter-spacing: 1px;
+            }
+
+            .warning-header {
+                gap: 12px;
+            }
+
+            .warning-btn {
+                padding: 12px 20px;
+                font-size: 0.85rem;
+                min-width: 160px;
             }
         }
     </style>
