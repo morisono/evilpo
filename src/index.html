@@ -214,6 +214,92 @@
         </div>
     </div>
 
+    <!-- Image Modal -->
+    <div class="modal-overlay" id="image-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container">
+            <button class="modal-close" id="modal-close" aria-label="モーダルを閉じる">×</button>
+
+            <div class="modal-content">
+                <div class="modal-image-section">
+                    <img id="modal-image" src="" alt="" class="modal-image">
+                    <div class="modal-image-loading">
+                        <div class="spinner"></div>
+                        <p>画像を読み込み中...</p>
+                    </div>
+                    <div class="modal-image-error" style="display: none;">
+                        <p>画像の読み込みに失敗しました</p>
+                    </div>
+                </div>
+
+                <div class="modal-info-section">
+                    <div class="modal-header">
+                        <h2 id="modal-politician-name">議員名</h2>
+                        <div class="modal-details" id="modal-details">
+                            <!-- Details will be populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="modal-tabs">
+                        <button class="modal-tab active" data-modal-tab="info">詳細情報</button>
+                        <button class="modal-tab" data-modal-tab="comments">コメント</button>
+                    </div>
+
+                    <div class="modal-tab-content">
+                        <div class="modal-tab-panel active" id="modal-info-panel">
+                            <div class="modal-politician-details" id="modal-politician-details">
+                                <!-- Detailed info will be populated here -->
+                            </div>
+                        </div>
+
+                        <div class="modal-tab-panel" id="modal-comments-panel">
+                            <div class="comments-section">
+                                <div class="comment-form">
+                                    <h3>コメントを投稿</h3>
+                                    <form id="comment-form">
+                                        <div class="form-group">
+                                            <label for="comment-author">お名前（任意）</label>
+                                            <input type="text" id="comment-author" placeholder="匿名" maxlength="50">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="comment-text">コメント *</label>
+                                            <textarea id="comment-text" required placeholder="ご意見をお聞かせください..." maxlength="500"></textarea>
+                                            <div class="character-count">
+                                                <span id="char-count">0</span>/500
+                                            </div>
+                                        </div>
+                                        <div class="form-actions">
+                                            <button type="submit" class="submit-btn" disabled>投稿する</button>
+                                            <button type="button" class="reset-btn">リセット</button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="comments-list">
+                                    <h3>コメント一覧</h3>
+                                    <div class="comments-container" id="comments-container">
+                                        <div class="no-comments">
+                                            <p>まだコメントがありません。最初のコメントを投稿してみませんか？</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-navigation">
+                <button class="modal-nav-btn prev" id="modal-prev" aria-label="前の議員">
+                    <span>‹</span>
+                </button>
+                <button class="modal-nav-btn next" id="modal-next" aria-label="次の議員">
+                    <span>›</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Embedded data to avoid CORS issues
         const embeddedData = {
@@ -347,6 +433,51 @@
             uragane: { currentPage: 1, itemsPerPage: 10 },
             tsubo: { currentPage: 1, itemsPerPage: 10 }
         };
+
+        // Modal state
+        let modalState = {
+            isOpen: false,
+            currentPolitician: null,
+            currentIndex: -1,
+            currentTab: 'info'
+        };
+
+        // Comments storage (in real app, this would be a database)
+        let commentsStorage = new Map();
+
+        // Add some sample comments for demonstration
+        function initSampleComments() {
+            const sampleComments = [
+                {
+                    id: '1',
+                    author: '市民太郎',
+                    text: 'このような問題について、もっと透明性のある説明が必要だと思います。',
+                    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+                    politicianName: '衛藤征士郎'
+                },
+                {
+                    id: '2',
+                    author: '政治ウォッチャー',
+                    text: '他の議員との比較も重要ですが、まずは事実関係の整理が必要ですね。',
+                    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
+                    politicianName: '衛藤征士郎'
+                },
+                {
+                    id: '3',
+                    author: '匿名',
+                    text: '国民への説明責任をしっかりと果たしてほしいです。',
+                    timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+                    politicianName: '衛藤征士郎'
+                }
+            ];
+
+            sampleComments.forEach(comment => {
+                if (!commentsStorage.has(comment.politicianName)) {
+                    commentsStorage.set(comment.politicianName, []);
+                }
+                commentsStorage.get(comment.politicianName).push(comment);
+            });
+        }
 
         // Theme functionality
         function initTheme() {
@@ -1048,8 +1179,21 @@
         // Create grid item
         function createGridItem(item, index) {
             const gridItem = document.createElement('div');
-            gridItem.className = 'grid-item';
+            gridItem.className = 'grid-item clickable-item';
             gridItem.style.animationDelay = `${Math.min(index * 30, 600)}ms`;
+
+            // Add click handler to open modal
+            gridItem.addEventListener('click', (e) => {
+                // Don't trigger modal if clicking on Wikipedia link
+                if (e.target.classList.contains('grid-wiki-link')) return;
+
+                // Get the actual index in filteredData
+                const actualIndex = (paginationState[currentTab].currentPage - 1) * paginationState[currentTab].itemsPerPage + index;
+                openModal(item, actualIndex);
+            });
+
+            // Add hover effect for clickable indication
+            gridItem.setAttribute('title', `${item.名前}の詳細を見る`);
 
             if (currentTab === 'uragane') {
                 gridItem.innerHTML = `
@@ -1065,7 +1209,7 @@
                             </div>
                             <div class="grid-name-info">
                                 <div class="grid-name">${item.名前}</div>
-                                <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="grid-wiki-link">
+                                <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="grid-wiki-link" onclick="event.stopPropagation()">
                                     📖 Wikipedia
                                 </a>
                             </div>
@@ -1112,7 +1256,7 @@
                             </div>
                             <div class="grid-name-info">
                                 <div class="grid-name">${item.名前}</div>
-                                <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="grid-wiki-link">
+                                <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="grid-wiki-link" onclick="event.stopPropagation()">
                                     📖 Wikipedia
                                 </a>
                             </div>
@@ -1208,8 +1352,21 @@
         // Create table row with thumbnail support
         function createTableRow(item, index) {
             const row = document.createElement('tr');
-            row.className = 'data-row';
+            row.className = 'data-row clickable-row';
             row.style.animationDelay = `${Math.min(index * 20, 500)}ms`;
+
+            // Add click handler to open modal
+            row.addEventListener('click', (e) => {
+                // Don't trigger modal if clicking on Wikipedia link
+                if (e.target.classList.contains('wiki-link')) return;
+
+                // Get the actual index in filteredData
+                const actualIndex = (paginationState[currentTab].currentPage - 1) * paginationState[currentTab].itemsPerPage + index;
+                openModal(item, actualIndex);
+            });
+
+            // Add hover effect for clickable indication
+            row.setAttribute('title', `${item.名前}の詳細を見る`);
 
             if (currentTab === 'uragane') {
                 row.innerHTML = `
@@ -1220,7 +1377,7 @@
                             </div>
                             <div class="name-info">
                                 <strong>${item.名前}</strong>
-                                <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="wiki-link">📖</a>
+                                <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="wiki-link" onclick="event.stopPropagation()">📖</a>
                             </div>
                         </div>
                     </td>
@@ -1239,7 +1396,7 @@
                             </div>
                             <div class="name-info">
                                 <strong>${item.名前}</strong>
-                                <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="wiki-link">📖</a>
+                                <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="wiki-link" onclick="event.stopPropagation()">📖</a>
                             </div>
                         </div>
                     </td>
@@ -1441,6 +1598,12 @@
             // Initialize trending slider
             initTrendingSlider();
 
+            // Initialize modal functionality
+            initModal();
+
+            // Initialize sample comments for demonstration
+            initSampleComments();
+
             // Load initial data
             showLoading();
             currentData = await fetchData('uragane');
@@ -1449,6 +1612,330 @@
             updateStats();
             renderCurrentView();
             hideLoading();
+        }
+
+        // Modal Functions
+        function initModal() {
+            const modal = document.getElementById('image-modal');
+            const closeBtn = document.getElementById('modal-close');
+            const backdrop = modal.querySelector('.modal-backdrop');
+            const prevBtn = document.getElementById('modal-prev');
+            const nextBtn = document.getElementById('modal-next');
+
+            // Close modal events
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+            if (backdrop) backdrop.addEventListener('click', closeModal);
+
+            // Navigation events
+            if (prevBtn) prevBtn.addEventListener('click', () => navigateModal('prev'));
+            if (nextBtn) nextBtn.addEventListener('click', () => navigateModal('next'));
+
+            // Modal tab switching
+            document.querySelectorAll('.modal-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const tabName = e.target.getAttribute('data-modal-tab');
+                    switchModalTab(tabName);
+                });
+            });
+
+            // Comment form functionality
+            initCommentForm();
+
+            // Keyboard shortcuts for modal
+            document.addEventListener('keydown', (e) => {
+                if (modalState.isOpen) {
+                    if (e.key === 'Escape') {
+                        closeModal();
+                    } else if (e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        navigateModal('prev');
+                    } else if (e.key === 'ArrowRight') {
+                        e.preventDefault();
+                        navigateModal('next');
+                    }
+                }
+            });
+        }
+
+        function openModal(politician, index) {
+            modalState.isOpen = true;
+            modalState.currentPolitician = politician;
+            modalState.currentIndex = index;
+
+            const modal = document.getElementById('image-modal');
+            const modalImage = document.getElementById('modal-image');
+            const modalName = document.getElementById('modal-politician-name');
+            const imageLoading = modal.querySelector('.modal-image-loading');
+            const imageError = modal.querySelector('.modal-image-error');
+
+            // Show modal
+            modal.classList.add('active');
+            document.body.classList.add('modal-open');
+
+            // Set politician name
+            modalName.textContent = politician.名前;
+
+            // Update modal details
+            updateModalDetails(politician);
+
+            // Load politician image
+            loadModalImage(politician.名前);
+
+            // Update navigation buttons
+            updateModalNavigation();
+
+            // Load comments
+            loadComments(politician.名前);
+
+            // Switch to info tab by default
+            switchModalTab('info');
+        }
+
+        function closeModal() {
+            modalState.isOpen = false;
+            modalState.currentPolitician = null;
+            modalState.currentIndex = -1;
+
+            const modal = document.getElementById('image-modal');
+            modal.classList.remove('active');
+            document.body.classList.remove('modal-open');
+
+            // Reset form
+            resetCommentForm();
+        }
+
+        function navigateModal(direction) {
+            const currentIndex = modalState.currentIndex;
+            const dataLength = filteredData.length;
+
+            let newIndex;
+            if (direction === 'next') {
+                newIndex = (currentIndex + 1) % dataLength;
+            } else {
+                newIndex = (currentIndex - 1 + dataLength) % dataLength;
+            }
+
+            const newPolitician = filteredData[newIndex];
+            openModal(newPolitician, newIndex);
+        }
+
+        function updateModalNavigation() {
+            const prevBtn = document.getElementById('modal-prev');
+            const nextBtn = document.getElementById('modal-next');
+            const hasMultiplePoliticians = filteredData.length > 1;
+
+            if (prevBtn) prevBtn.style.display = hasMultiplePoliticians ? 'flex' : 'none';
+            if (nextBtn) nextBtn.style.display = hasMultiplePoliticians ? 'flex' : 'none';
+        }
+
+        function switchModalTab(tabName) {
+            modalState.currentTab = tabName;
+
+            // Update tab buttons
+            document.querySelectorAll('.modal-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.getAttribute('data-modal-tab') === tabName) {
+                    tab.classList.add('active');
+                }
+            });
+
+            // Update tab panels
+            document.querySelectorAll('.modal-tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+
+            const targetPanel = document.getElementById(`modal-${tabName}-panel`);
+            if (targetPanel) targetPanel.classList.add('active');
+        }
+
+        function updateModalDetails(politician) {
+            const detailsContainer = document.getElementById('modal-details');
+            const politicianDetails = document.getElementById('modal-politician-details');
+
+            // Basic details for header
+            const headerDetails = [];
+            if (politician.選挙区) headerDetails.push(`選挙区: ${politician.選挙区}`);
+            if (politician.エリア) headerDetails.push(`エリア: ${politician.エリア}`);
+
+            detailsContainer.innerHTML = headerDetails.map(detail =>
+                `<span class="modal-detail-item">${detail}</span>`
+            ).join('');
+
+            // Detailed information for info panel
+            const detailsHTML = Object.entries(politician)
+                .filter(([key, value]) => key !== '名前' && value)
+                .map(([key, value]) => `
+                    <div class="modal-detail-row">
+                        <span class="modal-detail-label">${key}:</span>
+                        <span class="modal-detail-value">${value}</span>
+                    </div>
+                `).join('');
+
+            politicianDetails.innerHTML = detailsHTML;
+        }
+
+        async function loadModalImage(name) {
+            const modalImage = document.getElementById('modal-image');
+            const imageLoading = document.querySelector('.modal-image-loading');
+            const imageError = document.querySelector('.modal-image-error');
+
+            // Show loading state
+            imageLoading.style.display = 'flex';
+            imageError.style.display = 'none';
+            modalImage.style.display = 'none';
+
+            try {
+                const thumbnailUrl = await getWikipediaThumbnail(name);
+
+                if (thumbnailUrl) {
+                    modalImage.src = thumbnailUrl;
+                    modalImage.alt = `${name}の写真`;
+
+                    modalImage.onload = () => {
+                        imageLoading.style.display = 'none';
+                        modalImage.style.display = 'block';
+                    };
+
+                    modalImage.onerror = () => {
+                        imageLoading.style.display = 'none';
+                        imageError.style.display = 'flex';
+                    };
+                } else {
+                    throw new Error('No image found');
+                }
+            } catch (error) {
+                imageLoading.style.display = 'none';
+                imageError.style.display = 'flex';
+            }
+        }
+
+        // Comment System Functions
+        function initCommentForm() {
+            const commentForm = document.getElementById('comment-form');
+            const commentText = document.getElementById('comment-text');
+            const charCount = document.getElementById('char-count');
+            const submitBtn = commentForm.querySelector('.submit-btn');
+            const resetBtn = commentForm.querySelector('.reset-btn');
+
+            // Character counter
+            commentText.addEventListener('input', () => {
+                const count = commentText.value.length;
+                charCount.textContent = count;
+                submitBtn.disabled = count === 0 || count > 500;
+            });
+
+            // Form submission
+            commentForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                submitComment();
+            });
+
+            // Reset button
+            resetBtn.addEventListener('click', resetCommentForm);
+        }
+
+        function submitComment() {
+            const authorInput = document.getElementById('comment-author');
+            const textInput = document.getElementById('comment-text');
+            const politicianName = modalState.currentPolitician?.名前;
+
+            if (!politicianName || !textInput.value.trim()) return;
+
+            const comment = {
+                id: Date.now().toString(),
+                author: authorInput.value.trim() || '匿名',
+                text: textInput.value.trim(),
+                timestamp: new Date(),
+                politicianName: politicianName
+            };
+
+            // Store comment
+            if (!commentsStorage.has(politicianName)) {
+                commentsStorage.set(politicianName, []);
+            }
+            commentsStorage.get(politicianName).push(comment);
+
+            // Reset form
+            resetCommentForm();
+
+            // Reload comments
+            loadComments(politicianName);
+
+            // Show success message
+            showCommentSuccess();
+        }
+
+        function resetCommentForm() {
+            const form = document.getElementById('comment-form');
+            const charCount = document.getElementById('char-count');
+            const submitBtn = form.querySelector('.submit-btn');
+
+            form.reset();
+            charCount.textContent = '0';
+            submitBtn.disabled = true;
+        }
+
+        function loadComments(politicianName) {
+            const commentsContainer = document.getElementById('comments-container');
+            const comments = commentsStorage.get(politicianName) || [];
+
+            if (comments.length === 0) {
+                commentsContainer.innerHTML = `
+                    <div class="no-comments">
+                        <p>まだコメントがありません。最初のコメントを投稿してみませんか？</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort comments by timestamp (newest first)
+            const sortedComments = [...comments].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            commentsContainer.innerHTML = sortedComments.map(comment => `
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <span class="comment-author">${escapeHtml(comment.author)}</span>
+                        <span class="comment-timestamp">${formatTimestamp(comment.timestamp)}</span>
+                    </div>
+                    <div class="comment-text">${escapeHtml(comment.text)}</div>
+                </div>
+            `).join('');
+        }
+
+        function showCommentSuccess() {
+            // Create and show a temporary success message
+            const successMsg = document.createElement('div');
+            successMsg.className = 'comment-success';
+            successMsg.textContent = 'コメントが投稿されました！';
+
+            const form = document.getElementById('comment-form');
+            form.appendChild(successMsg);
+
+            setTimeout(() => {
+                successMsg.remove();
+            }, 3000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'たった今';
+            if (diffMins < 60) return `${diffMins}分前`;
+            if (diffHours < 24) return `${diffHours}時間前`;
+            if (diffDays < 7) return `${diffDays}日前`;
+
+            return date.toLocaleDateString('ja-JP');
         }
 
         // Start the application when DOM is ready
@@ -1485,9 +1972,9 @@
             --danger-color: #ef4444;
             --warning-color: #f59e0b;
             --success-color: #10b981;
-            --background-color: #0f172a;
+            --background-color: #040000;
             --surface-color: #1e293b;
-            --text-primary: #f1f5f9;
+            --text-primary: #f87171;
             --text-secondary: #94a3b8;
             --border-color: #334155;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
@@ -3384,6 +3871,626 @@
                 animation-duration: 0.01ms !important;
                 animation-iteration-count: 1 !important;
                 transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Interactive Elements */
+        .clickable-row,
+        .clickable-item {
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .clickable-row::before,
+        .clickable-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s ease;
+            pointer-events: none;
+        }
+
+        .clickable-row:hover::before,
+        .clickable-item:hover::before {
+            left: 100%;
+        }
+
+        .clickable-row:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .clickable-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .modal-container {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            height: 90vh;
+            max-height: 800px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9) translateY(50px);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-overlay.active .modal-container {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 10001;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-close:hover {
+            background: rgba(0, 0, 0, 0.7);
+            transform: scale(1.1);
+        }
+
+        .modal-content {
+            display: flex;
+            height: 100%;
+        }
+
+        .modal-image-section {
+            flex: 1;
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-image:hover {
+            transform: scale(1.02);
+        }
+
+        .modal-image-loading,
+        .modal-image-error {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            gap: 15px;
+        }
+
+        .modal-image-loading .spinner {
+            border-color: white;
+            border-top-color: transparent;
+        }
+
+        .modal-info-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 30px 30px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--card-bg);
+        }
+
+        .modal-header h2 {
+            margin: 0 0 10px;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .modal-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .modal-detail-item {
+            background: var(--accent-color);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .modal-tabs {
+            display: flex;
+            background: var(--secondary-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .modal-tab.active {
+            color: var(--accent-color);
+            background: var(--card-bg);
+        }
+
+        .modal-tab::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--accent-color);
+            transform: scaleX(0);
+            transition: transform 0.2s ease;
+        }
+
+        .modal-tab.active::after {
+            transform: scaleX(1);
+        }
+
+        .modal-tab-content {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .modal-tab-panel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .modal-tab-panel.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: all;
+        }
+
+        .modal-politician-details {
+            padding: 30px;
+        }
+
+        .modal-detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .modal-detail-label {
+            font-weight: 600;
+            color: var(--text-muted);
+            flex: 0 0 120px;
+        }
+
+        .modal-detail-value {
+            flex: 1;
+            text-align: right;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        /* Comments Section */
+        .comments-section {
+            padding: 30px;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .comment-form {
+            background: var(--secondary-bg);
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .comment-form h3 {
+            margin: 0 0 20px;
+            color: var(--text-color);
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            max-height: 200px;
+        }
+
+        .character-count {
+            position: absolute;
+            bottom: -20px;
+            right: 0;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        .submit-btn,
+        .reset-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .submit-btn {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .submit-btn:not(:disabled):hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .reset-btn {
+            background: var(--secondary-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .reset-btn:hover {
+            background: var(--border-color);
+            transform: translateY(-1px);
+        }
+
+        .comments-list h3 {
+            margin: 0 0 20px;
+            color: var(--text-color);
+            font-size: 1.2rem;
+        }
+
+        .comments-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .comment-item {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
+        }
+
+        .comment-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        .comment-timestamp {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .comment-text {
+            color: var(--text-color);
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .no-comments {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .comment-success {
+            background: #10b981;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            animation: slideInSuccess 0.3s ease;
+        }
+
+        @keyframes slideInSuccess {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Modal Navigation */
+        .modal-navigation {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            height: 0;
+            pointer-events: none;
+            z-index: 10001;
+        }
+
+        .modal-nav-btn {
+            position: absolute;
+            top: 0;
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            pointer-events: all;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-nav-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: scale(1.1);
+        }
+
+        .modal-nav-btn.prev {
+            left: 20px;
+        }
+
+        .modal-nav-btn.next {
+            right: 20px;
+        }
+
+        /* Prevent body scroll when modal is open */
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        /* Dark mode adjustments for modal */
+        [data-theme="dark"] .modal-container {
+            background: var(--card-bg);
+            border-color: var(--border-color);
+        }
+
+        [data-theme="dark"] .modal-backdrop {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        [data-theme="dark"] .comment-form,
+        [data-theme="dark"] .comment-item {
+            background: var(--secondary-bg);
+            border-color: var(--border-color);
+        }
+
+        /* Responsive modal */
+        @media (max-width: 768px) {
+            .modal-overlay {
+                padding: 10px;
+            }
+
+            .modal-container {
+                height: 95vh;
+                flex-direction: column;
+            }
+
+            .modal-content {
+                flex-direction: column;
+                height: 100%;
+            }
+
+            .modal-image-section {
+                flex: 0 0 40%;
+                min-height: 250px;
+            }
+
+            .modal-info-section {
+                flex: 1;
+            }
+
+            .modal-header {
+                padding: 20px;
+            }
+
+            .modal-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .modal-politician-details,
+            .comments-section {
+                padding: 20px;
+            }
+
+            .comment-form {
+                padding: 20px;
+            }
+
+            .modal-nav-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+
+            .modal-close {
+                width: 35px;
+                height: 35px;
+                font-size: 20px;
+                top: 15px;
+                right: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modal-container {
+                border-radius: 16px;
+            }
+
+            .modal-tabs {
+                flex-wrap: wrap;
+            }
+
+            .modal-tab {
+                flex: 1;
+                min-width: 120px;
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .submit-btn,
+            .reset-btn {
+                width: 100%;
             }
         }
     </style>
