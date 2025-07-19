@@ -1,0 +1,11 @@
+{
+    "workbench.colorCustomizations": {
+        "editorRuler.foreground": "#333",
+        "diffEditor.removedTextBackground": "#FF00000f",
+        "diffEditor.insertedTextBackground": "#00ff000a",
+        "editor.selectionHighlightBorder": "#777",
+        "activityBar.background": "#4D2019",
+        "titleBar.activeBackground": "#6C2D23",
+        "titleBar.activeForeground": "#FDF9F8"
+    }
+}

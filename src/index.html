@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>議員データベース</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>議員データベース</h1>
+            <p class="subtitle">裏金議員・壺議員の詳細情報</p>
+        </header>
+
+        <nav class="tab-navigation">
+            <button class="tab-button active" data-tab="uragane" aria-selected="true">
+                <span class="tab-icon">💰</span>
+                <span class="tab-text">裏金議員 (46名)</span>
+            </button>
+            <button class="tab-button" data-tab="tsubo" aria-selected="false">
+                <span class="tab-icon">🏛️</span>
+                <span class="tab-text">壺議員 (33名)</span>
+            </button>
+        </nav>
+
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="議員名、選挙区、エリアで検索..." autocomplete="off">
+            <button id="clear-search" aria-label="検索をクリア">×</button>
+        </div>
+
+        <div class="filter-container">
+            <select id="area-filter">
+                <option value="">すべてのエリア</option>
+            </select>
+            <select id="status-filter">
+                <option value="">すべてのステータス</option>
+            </select>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <span class="stat-number" id="total-count">0</span>
+                <span class="stat-label">総数</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="filtered-count">0</span>
+                <span class="stat-label">表示中</span>
+            </div>
+        </div>
+
+        <div class="tab-content">
+            <div id="uragane-content" class="tab-panel active">
+                <div class="table-container">
+                    <table id="uragane-table">
+                        <caption>
+                            <h2>裏金議員46名 一覧表</h2>
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th style="width: 180px;">名前・写真</th>
+                                <th>選挙区</th>
+                                <th>エリア</th>
+                                <th>裏金金額</th>
+                                <th>公認・非公認</th>
+                                <th>党の処分</th>
+                            </tr>
+                        </thead>
+                        <tbody id="uragane-tbody">
+                            <!-- Dynamic content will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="tsubo-content" class="tab-panel">
+                <div class="table-container">
+                    <table id="tsubo-table">
+                        <caption>
+                            <h2>壺議員33名 一覧表</h2>
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th style="width: 180px;">名前・写真</th>
+                                <th>住所</th>
+                                <th>分類</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tsubo-tbody">
+                            <!-- Dynamic content will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading-indicator" id="loading">
+            <div class="spinner"></div>
+            <p>データを読み込み中...</p>
+        </div>
+
+        <div class="error-message" id="error-message" style="display: none;">
+            <p>データの読み込みに失敗しました。しばらくしてから再試行してください。</p>
+        </div>
+    </div>
+
+    <script>
+        // Embedded data to avoid CORS issues
+        const embeddedData = {
+            uragane: [
+                { 名前: '和田義明', 選挙区: '北海道5区', エリア: '北海道・東北', 裏金金額: '990万円', '公認・非公認': '公認', 党の処分: '戒告' },
+                { 名前: '木村次郎', 選挙区: '青森3区', エリア: '北海道・東北', 裏金金額: '236万円', '公認・非公認': '公認', 党の処分: '幹事長注意' },
+                { 名前: '藤原崇', 選挙区: '岩手3区', エリア: '北海道・東北', 裏金金額: '14万円', '公認・非公認': '公認', 党の処分: '幹事長注意' },
+                { 名前: '西村明宏', 選挙区: '宮城3区', エリア: '北海道・東北', 裏金金額: '554万円', '公認・非公認': '公認', 党の処分: '戒告' },
+                { 名前: '亀岡偉民', 選挙区: '福島1区', エリア: '北海道・東北', 裏金金額: '348万円', '公認・非公認': '公認', 党の処分: '幹事長注意' },
+                { 名前: '上杉謙太郎', 選挙区: '福島3区', エリア: '北海道・東北', 裏金金額: '309万円', '公認・非公認': '非公認', 党の処分: '幹事長注意' },
+                { 名前: '梁和生', 選挙区: '栃木3区', エリア: '関東・東京', 裏金金額: '1746万円', '公認・非公認': '公認', 党の処分: '党の役職停止 6カ月' },
+                { 名前: '福田達夫', 選挙区: '群馬4区', エリア: '関東・東京', 裏金金額: '98万円', '公認・非公認': '公認', 党の処分: '幹事長注意' },
+                { 名前: '中根ー幸', 選挙区: '埼玉6区', エリア: '関東・東京', 裏金金額: '1860万円', '公認・非公認': '公認', 党の処分: '党の役職停止 6カ月' },
+                { 名前: '柴山昌彦', 選挙区: '埼玉8区', エリア: '関東・東京', 裏金金額: '896万円', '公認・非公認': '公認', 党の処分: '戒告' },
+                { 名前: '大塚拓', 選挙区: '埼玉9区', エリア: '関東・東京', 裏金金額: '994万円', '公認・非公認': '公認', 党の処分: '戒告' },
+                { 名前: '三ツ林裕巳', 選挙区: '埼玉13区', エリア: '関東・東京', 裏金金額: '2954万円', '公認・非公認': '公認', 党の処分: '党の役職停止 1年間' },
+                { 名前: '松野博ー', 選挙区: '千葉3区', エリア: '関東・東京', 裏金金額: '1051万円', '公認・非公認': '公認', 党の処分: '党の役職停止 1年間' },
+                { 名前: '山田美樹', 選挙区: '東京1区', エリア: '関東・東京', 裏金金額: '76万円', '公認・非公認': '公認', 党の処分: '幹事長注意' },
+                { 名前: '丸川珠代', 選挙区: '東京7区', エリア: '関東・東京', 裏金金額: '822万円', '公認・非公認': '公認', 党の処分: '戒告' },
+                { 名前: '下村博文', 選挙区: '東京11区', エリア: '関東・東京', 裏金金額: '476万円', '公認・非公認': '非公認', 党の処分: '党員資格 1年間' },
+                { 名前: '平沢勝栄', 選挙区: '東京17区', エリア: '関東・東京', 裏金金額: '1817万円', '公認・非公認': '非公認', 党の処分: '党の役職停止 1年間' },
+                { 名前: '小田原潔', 選挙区: '東京21区', エリア: '関東・東京', 裏金金額: '1240万円', '公認・非公認': '非公認', 党の処分: '役職停止 1年間' },
+                { 名前: '荻生田光一', 選挙区: '東京24区', エリア: '関東・東京', 裏金金額: '2728万円', '公認・非公認': '非公認', 党の処分: '党の役職 6カ月' },
+                { 名前: '義家弘介', 選挙区: '神奈川16区', エリア: '関東・東京', 裏金金額: '369万円', '公認・非公認': '公認', 党の処分: '幹事長注意' },
+                { 名前: '細田健一', 選挙区: '新潟2区', エリア: '北信越・東海', 裏金金額: '567万円', '公認・非公認': '非公認', 党の処分: '戒告' },
+                { 名前: '高鳥修一', 選挙区: '新潟5区', エリア: '北信越・東海', 裏金金額: '5万円', '公認・非公認': '公認', 党の処分: '戒告' },
+                { 名前: '田畑裕明', 選挙区: '富山1区', エリア: '北信越・東海', 裏金金額: '68万円', '公認・非公認': '公認', 党の処分: '幹事長注意' },
+                { 名前: '小森卓郎', 選挙区: '石川1区', エリア: '北信越・東海', 裏金金額: '70万円', '公認・非公認': '公認', 党の処分: '幹事長注意' },
+                { 名前: '佐々木紀', 選挙区: '石川2区', エリア: '北信越・東海', 裏金金額: '1万円', '公認・非公認': '公認', 党の処分: '幹事長注意' },
+                { 名前: '稲田朋美', 選挙区: '福井1区', エリア: '北信越・東海', 裏金金額: '196万円', '公認・非公認': '公認', 党の処分: '事長注意' },
+                { 名前: '高木毅', 選挙区: '福井2区', エリア: '北信越・東海', 裏金金額: '1019万円', '公認・非公認': '非公認', 党の処分: '党員資格停止 6カ月' },
+                { 名前: '若林健太', 選挙区: '長野1区', エリア: '北信越・東海', 裏金金額: '368万円', '公認・非公認': '公認', 党の処分: '幹事長注意' },
+                { 名前: '宮下一郎', 選挙区: '長野5区', エリア: '北信越・東海', 裏金金額: '12万円', '公認・非公認': '公認', 党の処分: '幹事長注意' },
+                { 名前: '宮沢博行', 選挙区: '静岡3区', エリア: '北信越・東海', 裏金金額: '132万円', '公認・非公認': '非公認', 党の処分: '4月に離党・議員も辞職' },
+                { 名前: '鈴木淳司', 選挙区: '愛知7区', エリア: '北信越・東海', 裏金金額: '60万円', '公認・非公認': '公認', 党の処分: '幹事長注意' },
+                { 名前: '青山周平', 選挙区: '愛知12区', エリア: '北信越・東海', 裏金金額: '230万円', '公認・非公認': '公認', 党の処分: '幹事長注意' },
+                { 名前: '根本幸典', 選挙区: '愛知15区', エリア: '北信越・東海', 裏金金額: '420万円', '公認・非公認': '公認', 党の処分: '幹事長注意' },
+                { 名前: '鈴木英敬', 選挙区: '三重4区', エリア: '北信越・東海', 裏金金額: '280万円', '公認・非公認': '公認', 党の処分: '幹事長注意' },
+                { 名前: '中山泰秀', 選挙区: '大阪4区', エリア: '近畿・中国・四国・九州', 裏金金額: '908万円', '公認・非公認': '公認', 党の処分: '戒告' },
+                { 名前: '加納陽之助', 選挙区: '大阪10区', エリア: '近畿・中国・四国・九州', 裏金金額: '40万円', '公認・非公認': '公認', 党の処分: '幹事長注意' },
+                { 名前: '示清皇ー', 選挙区: '大阪13区', エリア: '近畿・中国・四国・九州', 裏金金額: '1408万円', '公認・非公認': '公認', 党の処分: '党の役職停止6カ月' },
+                { 名前: '谷川とむ', 選挙区: '大阪19区', エリア: '近畿・中国・四国・九州', 裏金金額: '188万円', '公認・非公認': '公認', 党の処分: '事長注意' },
+                { 名前: '関芳弘', 選挙区: '兵庫3区', エリア: '近畿・中国・四国・九州', 裏金金額: '836万円', '公認・非公認': '公認', 党の処分: '戒告' },
+                { 名前: '西村康稔', 選挙区: '兵庫9区', エリア: '近畿・中国・四国・九州', 裏金金額: '100万円', '公認・非公認': '非公認', 党の処分: '党員資格停止1年間' },
+                { 名前: '世耕弘成', 選挙区: '和歌山2区', エリア: '近畿・中国・四国・九州', 裏金金額: '1542万円', '公認・非公認': '無所属', 党の処分: '離党勧告を受け離党' },
+                { 名前: '井原巧', 選挙区: '愛媛2区', エリア: '近畿・中国・四国・九州', 裏金金額: '168万円', '公認・非公認': '公認', 党の処分: '事長注意' },
+                { 名前: '宮内秀樹', 選挙区: '福岡4区', エリア: '近畿・中国・四国・九州', 裏金金額: '161万円', '公認・非公認': '公認', 党の処分: '事長注意' },
+                { 名前: '武田良太', 選挙区: '福岡11区', エリア: '近畿・中国・四国・九州', 裏金金額: '1926万円', '公認・非公認': '公認', 党の処分: '党の役職停止1年間' },
+                { 名前: '加藤竜祥', 選挙区: '長崎2区', エリア: '近畿・中国・四国・九州', 裏金金額: '10万円', '公認・非公認': '公認', 党の処分: '事長注意' },
+                { 名前: '衛藤征士郎', 選挙区: '大分2区', エリア: '近畿・中国・四国・九州', 裏金金額: '1070万円', '公認・非公認': '公認', 党の処分: '党の役職停止6カ月' }
+            ],
+            tsubo: [
+                { 名前: '萩生田光一', 住所: '〒192-0046 東京都八王子市明神町4-1-2 ストーク八王子205', 分類: '壺議員' },
+                { 名前: '岸信夫', 住所: '〒740-0017 山口県岩国市今津町1丁目10-17-201 岸信夫岩国事務所御中', 分類: '壺議員' },
+                { 名前: '木村次郎', 住所: '〒036-8191 青森県弘前市親方町43-3F', 分類: '壺議員' },
+                { 名前: '熊田裕通', 住所: '〒451-0061 名古屋市西区浄心1-1-41 浄心ステーションビル北館1階102号', 分類: '壺議員' },
+                { 名前: '斎藤洋明', 住所: '〒957-0056 新潟県新発田市大栄町3丁目6-3', 分類: '壺議員' },
+                { 名前: '坂井学', 住所: '〒244-0003 神奈川県横浜市戸塚区戸塚町142 鈴木ビル3F', 分類: '壺議員' },
+                { 名前: '高鳥修一', 住所: '〒949-6680 新潟県南魚沼市六日町459-3 サファイアビル1F', 分類: '壺議員' },
+                { 名前: '田畑裕明', 住所: '〒930-0017 富山県富山市東田地方町2丁目2-5', 分類: '壺議員' },
+                { 名前: '田野瀬田道', 住所: '〒634-0813 奈良県橿原市四条町627-5-2F', 分類: '壺議員' },
+                { 名前: '中川貴元', 住所: '〒464-0848 名古屋市千種区春岡1-4-8 ESSE池下805', 分類: '壺議員' },
+                { 名前: '中村裕之', 住所: '〒006-0815 北海道札幌市手稲区前田5条15丁目6-14', 分類: '壺議員' },
+                { 名前: '深澤陽一', 住所: '〒424-0817 静岡県静岡市清水区銀座 14-17', 分類: '壺議員' },
+                { 名前: '星野剛士', 住所: '〒424-0817 静岡県静岡市清水区銀座 14-17', 分類: '壺議員' },
+                { 名前: '若林健太', 住所: '〒380-0921 長野県長野市大字栗田８−１', 分類: '壺議員' },
+                { 名前: '北村経夫', 住所: '〒753-0064 山口県山口市神田町5-11', 分類: '壺議員' },
+                { 名前: 'こやり隆史', 住所: '〒520-0043 滋賀県大津市中央3丁目2-1 セザール大津森田ビル7F', 分類: '壺議員' },
+                { 名前: '船橋利実', 住所: '〒060-0042 北海道札幌市中央区大通西8丁目 ダイヤモンドビル2F', 分類: '壺議員' },
+                { 名前: '井上義行', 住所: '〒250-0011 神奈川県小田原市栄町1-14-48 ジャンボーナックビル7Ｆ 706', 分類: '壺議員' },
+                { 名前: '赤澤亮正', 住所: '〒683-0823 鳥取県米子市加茂町1-24', 分類: '壺議員' },
+                { 名前: '甘利明', 住所: '〒252-0303 神奈川県相模原市南区相模大野6-7-9-1F', 分類: '壺議員' },
+                { 名前: '石破茂', 住所: '〒680-0055 鳥取県鳥取市戎町515-3', 分類: '壺議員' },
+                { 名前: '伊東良孝', 住所: '〒085-0021 北海道釧路市浪花町13-2-1', 分類: '壺議員' },
+                { 名前: '大岡敏孝', 住所: '〒520-0026 滋賀県大津市桜野町1-1-6 ISⅡ203', 分類: '壺議員' },
+                { 名前: '小田原潔', 住所: '〒190-0011 東京都立川市高松町3-14-11 マスターズオフィス立川', 分類: '壺議員' },
+                { 名前: '木原稔', 住所: '〒862-0976 熊本市中央区九品寺2-8-17 九品寺サンシャイン1F', 分類: '壺議員' },
+                { 名前: '佐々木紀', 住所: '〒923-0941 石川県小松市城南町35番地', 分類: '壺議員' },
+                { 名前: '谷川とむ', 住所: '〒598-0007 大阪府泉佐野市上町1-1-35 1.3ビルディング2階', 分類: '壺議員' },
+                { 名前: '中谷真一', 住所: '〒400-0064 山梨県甲府市下飯田３丁目８−２９', 分類: '壺議員' },
+                { 名前: '中山展宏', 住所: '〒214-0014 神奈川県川崎市多摩区登戸2663 東洋ビル5F', 分類: '壺議員' },
+                { 名前: '古川康', 住所: '〒845-0022 小城市三日月町久米1422-11', 分類: '壺議員' },
+                { 名前: '宮澤博行', 住所: '〒438-0086 静岡県磐田市見付5738-13', 分類: '壺議員' },
+                { 名前: '務台俊介', 住所: '〒390-0863 長野県松本市白板2-3-30 大永第3ビル101', 分類: '壺議員' },
+                { 名前: '山際大志郎', 住所: '〒213-0001 神奈川県川崎市高津区溝口2-14-12', 分類: '壺議員' },
+                { 名前: '義家弘介', 住所: '〒243-0014 神奈川県厚木市旭町1-15-17', 分類: '壺議員' }
+            ]
+        };
+
+        // Data cache for performance
+        const dataCache = {
+            uragane: null,
+            tsubo: null
+        };
+
+        // Wikipedia thumbnail cache
+        const thumbnailCache = new Map();
+
+        // Configuration
+        const CONFIG = {
+            DEBOUNCE_DELAY: 300,
+            BATCH_SIZE: 50,
+            ANIMATION_DURATION: 200,
+            WIKIPEDIA_API_DELAY: 100
+        };
+
+        // State management
+        let currentTab = 'uragane';
+        let searchDebounceTimer = null;
+        let currentData = [];
+        let filteredData = [];
+
+        // Wikipedia API functions
+        async function getWikipediaThumbnail(name) {
+            if (thumbnailCache.has(name)) {
+                return thumbnailCache.get(name);
+            }
+
+            try {
+                // First, search for the page
+                const searchUrl = `https://ja.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`;
+                const response = await fetch(searchUrl);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const thumbnailUrl = data.thumbnail ? data.thumbnail.source : null;
+
+                thumbnailCache.set(name, thumbnailUrl);
+                return thumbnailUrl;
+            } catch (error) {
+                console.warn(`Failed to fetch thumbnail for ${name}:`, error);
+                thumbnailCache.set(name, null);
+                return null;
+            }
+        }
+
+        // Add delay between Wikipedia API calls to avoid rate limiting
+        async function fetchThumbnailWithDelay(name, delay) {
+            return new Promise(resolve => {
+                setTimeout(async () => {
+                    const thumbnail = await getWikipediaThumbnail(name);
+                    resolve(thumbnail);
+                }, delay);
+            });
+        }
+
+        // YAML parsing function (kept for future use)
+        function parseYAML(yamlText) {
+            const lines = yamlText.split('\n');
+            const result = [];
+            let currentItem = null;
+
+            for (let line of lines) {
+                line = line.trim();
+                if (line.startsWith('- 名前:') || line.startsWith('- name:')) {
+                    if (currentItem) result.push(currentItem);
+                    currentItem = {};
+                    currentItem.名前 = line.split(':')[1].trim();
+                } else if (line.includes(':') && currentItem) {
+                    const [key, ...valueParts] = line.split(':');
+                    const value = valueParts.join(':').trim().replace(/^["']|["']$/g, '');
+                    currentItem[key.trim()] = value;
+                }
+            }
+            if (currentItem) result.push(currentItem);
+            return result;
+        }
+
+        // Fetch data with embedded fallback
+        async function fetchData(type) {
+            if (dataCache[type]) {
+                return dataCache[type];
+            }
+
+            // Use embedded data instead of fetching YAML files
+            const data = embeddedData[type] || [];
+            dataCache[type] = data;
+            return data;
+        }
+
+        // Debounced search function
+        function debounce(func, delay) {
+            return function(...args) {
+                clearTimeout(searchDebounceTimer);
+                searchDebounceTimer = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+        // Filter data based on search and filters
+        function filterData() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const areaFilter = document.getElementById('area-filter').value;
+            const statusFilter = document.getElementById('status-filter').value;
+
+            filteredData = currentData.filter(item => {
+                const matchesSearch = searchTerm === '' ||
+                    Object.values(item).some(value =>
+                        value && value.toString().toLowerCase().includes(searchTerm)
+                    );
+
+                const matchesArea = !areaFilter ||
+                    (item.エリア && item.エリア === areaFilter);
+
+                const matchesStatus = !statusFilter ||
+                    (currentTab === 'uragane' && item['公認・非公認'] === statusFilter) ||
+                    (currentTab === 'tsubo' && item.分類 === statusFilter);
+
+                return matchesSearch && matchesArea && matchesStatus;
+            });
+
+            updateStats();
+            renderTable();
+        }
+
+        // Update statistics
+        function updateStats() {
+            document.getElementById('total-count').textContent = currentData.length;
+            document.getElementById('filtered-count').textContent = filteredData.length;
+        }
+
+        // Render table with virtual scrolling for large datasets
+        function renderTable() {
+            const tbody = document.getElementById(`${currentTab}-tbody`);
+
+            // Clear existing content
+            tbody.innerHTML = '';
+
+            // Batch rendering for better performance
+            const fragment = document.createDocumentFragment();
+
+            filteredData.forEach((item, index) => {
+                const row = createTableRow(item, index);
+                fragment.appendChild(row);
+            });
+
+            tbody.appendChild(fragment);
+        }
+
+        // Create table row with thumbnail support
+        function createTableRow(item, index) {
+            const row = document.createElement('tr');
+            row.className = 'data-row';
+            row.style.animationDelay = `${Math.min(index * 20, 500)}ms`;
+
+            if (currentTab === 'uragane') {
+                row.innerHTML = `
+                    <td class="name-cell">
+                        <div class="name-container">
+                            <div class="thumbnail-container" data-name="${item.名前}">
+                                <div class="thumbnail-loading">📷</div>
+                            </div>
+                            <div class="name-info">
+                                <strong>${item.名前}</strong>
+                                <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="wiki-link">📖</a>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${item.選挙区 || '-'}</td>
+                    <td><span class="area-tag">${item.エリア || '-'}</span></td>
+                    <td class="amount-cell">${item.裏金金額 || '-'}</td>
+                    <td><span class="status-badge status-${item['公認・非公認']?.replace('・', '-')}">${item['公認・非公認'] || '-'}</span></td>
+                    <td class="punishment-cell">${item.党の処分 || '-'}</td>
+                `;
+            } else {
+                row.innerHTML = `
+                    <td class="name-cell">
+                        <div class="name-container">
+                            <div class="thumbnail-container" data-name="${item.名前}">
+                                <div class="thumbnail-loading">📷</div>
+                            </div>
+                            <div class="name-info">
+                                <strong>${item.名前}</strong>
+                                <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="wiki-link">📖</a>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="address-cell">${item.住所 || '-'}</td>
+                    <td><span class="category-badge">${item.分類 || '-'}</span></td>
+                `;
+            }
+
+            // Load thumbnail asynchronously
+            setTimeout(() => {
+                loadThumbnailForRow(row, item.名前, index);
+            }, index * CONFIG.WIKIPEDIA_API_DELAY);
+
+            return row;
+        }
+
+        // Load thumbnail for a specific row
+        async function loadThumbnailForRow(row, name, index) {
+            const thumbnailContainer = row.querySelector('.thumbnail-container');
+            if (!thumbnailContainer) return;
+
+            try {
+                const thumbnailUrl = await fetchThumbnailWithDelay(name, index * 50);
+
+                if (thumbnailUrl) {
+                    const img = document.createElement('img');
+                    img.src = thumbnailUrl;
+                    img.alt = `${name}の写真`;
+                    img.className = 'politician-thumbnail';
+                    img.loading = 'lazy';
+
+                    img.onload = () => {
+                        thumbnailContainer.innerHTML = '';
+                        thumbnailContainer.appendChild(img);
+                    };
+
+                    img.onerror = () => {
+                        thumbnailContainer.innerHTML = '<div class="thumbnail-error">📷</div>';
+                    };
+                } else {
+                    thumbnailContainer.innerHTML = '<div class="thumbnail-error">📷</div>';
+                }
+            } catch (error) {
+                console.warn(`Failed to load thumbnail for ${name}:`, error);
+                thumbnailContainer.innerHTML = '<div class="thumbnail-error">📷</div>';
+            }
+        }
+
+        // Update filter options
+        function updateFilterOptions() {
+            const areaFilter = document.getElementById('area-filter');
+            const statusFilter = document.getElementById('status-filter');
+
+            // Clear existing options (except the first one)
+            areaFilter.innerHTML = '<option value="">すべてのエリア</option>';
+            statusFilter.innerHTML = '<option value="">すべてのステータス</option>';
+
+            if (currentTab === 'uragane') {
+                // Add unique areas
+                const areas = [...new Set(currentData.map(item => item.エリア).filter(Boolean))];
+                areas.forEach(area => {
+                    const option = document.createElement('option');
+                    option.value = area;
+                    option.textContent = area;
+                    areaFilter.appendChild(option);
+                });
+
+                // Add unique statuses
+                const statuses = [...new Set(currentData.map(item => item['公認・非公認']).filter(Boolean))];
+                statuses.forEach(status => {
+                    const option = document.createElement('option');
+                    option.value = status;
+                    option.textContent = status;
+                    statusFilter.appendChild(option);
+                });
+            } else {
+                // For tsubo tab, no area filter needed, just categories
+                statusFilter.innerHTML = '<option value="">すべての分類</option>';
+                const categories = [...new Set(currentData.map(item => item.分類).filter(Boolean))];
+                categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    statusFilter.appendChild(option);
+                });
+            }
+        }
+
+        // Switch tabs
+        async function switchTab(tabName) {
+            if (tabName === currentTab) return;
+
+            showLoading();
+            currentTab = tabName;
+
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.querySelector(`[data-tab="${tabName}"]`).setAttribute('aria-selected', 'true');
+
+            // Update tab panels
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-content`).classList.add('active');
+
+            // Load data
+            currentData = await fetchData(tabName);
+            filteredData = [...currentData];
+
+            updateFilterOptions();
+            updateStats();
+            renderTable();
+            hideLoading();
+        }
+
+        // Show/hide loading indicator
+        function showLoading() {
+            document.getElementById('loading').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        // Show error message
+        function showError() {
+            document.getElementById('error-message').style.display = 'block';
+            hideLoading();
+        }
+
+        // Initialize the application
+        async function init() {
+            // Set up event listeners
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    switchTab(e.currentTarget.dataset.tab);
+                });
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('search-input');
+            const clearSearch = document.getElementById('clear-search');
+
+            searchInput.addEventListener('input', debounce(filterData, CONFIG.DEBOUNCE_DELAY));
+            clearSearch.addEventListener('click', () => {
+                searchInput.value = '';
+                filterData();
+            });
+
+            // Filter functionality
+            document.getElementById('area-filter').addEventListener('change', filterData);
+            document.getElementById('status-filter').addEventListener('change', filterData);
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey || e.metaKey) {
+                    switch(e.key) {
+                        case '1':
+                            e.preventDefault();
+                            switchTab('uragane');
+                            break;
+                        case '2':
+                            e.preventDefault();
+                            switchTab('tsubo');
+                            break;
+                        case 'f':
+                            e.preventDefault();
+                            searchInput.focus();
+                            break;
+                    }
+                }
+            });
+
+            // Load initial data
+            showLoading();
+            currentData = await fetchData('uragane');
+            filteredData = [...currentData];
+            updateFilterOptions();
+            updateStats();
+            renderTable();
+            hideLoading();
+        }
+
+        // Start the application when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --danger-color: #dc2626;
+            --warning-color: #d97706;
+            --success-color: #059669;
+            --background-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --border-radius: 8px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* Tab Navigation */
+        .tab-navigation {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 24px;
+            padding: 4px;
+            background-color: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tab-button {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            border-radius: calc(var(--border-radius) - 2px);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .tab-button:hover {
+            background-color: #f1f5f9;
+            color: var(--text-primary);
+        }
+
+        .tab-button.active {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tab-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Search and Filters */
+        .search-container {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        #search-input {
+            width: 100%;
+            padding: 12px 16px 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            background-color: var(--surface-color);
+            transition: var(--transition);
+        }
+
+        #search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+        }
+
+        #clear-search {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 4px;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        #clear-search:hover {
+            background-color: #f1f5f9;
+            color: var(--text-primary);
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .filter-container select {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background-color: var(--surface-color);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .filter-container select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* Statistics */
+        .stats-container {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background-color: var(--surface-color);
+            padding: 16px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            position: relative;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Table Styles */
+        .table-container {
+            background-color: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        caption h2 {
+            padding: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .data-row {
+            opacity: 0;
+            animation: slideInUp 0.4s ease-out forwards;
+            transition: var(--transition);
+        }
+
+        .data-row:hover {
+            background-color: #f8fafc;
+        }
+
+        .data-row:nth-child(even) {
+            background-color: #fafbfc;
+        }
+
+        .data-row:nth-child(even):hover {
+            background-color: #f1f5f9;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        td {
+            padding: 14px 12px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+
+        .name-cell {
+            font-weight: 600;
+            color: var(--text-primary);
+            min-width: 180px;
+            padding: 8px 12px !important;
+        }
+
+        .name-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .thumbnail-container {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .politician-thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.2s ease;
+        }
+
+        .politician-thumbnail:hover {
+            transform: scale(1.05);
+        }
+
+        .thumbnail-loading,
+        .thumbnail-error {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+
+        .name-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .name-info strong {
+            font-size: 0.95rem;
+            line-height: 1.2;
+            word-wrap: break-word;
+        }
+
+        .wiki-link {
+            font-size: 0.8rem;
+            text-decoration: none;
+            color: var(--primary-color);
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+            align-self: flex-start;
+        }
+
+        .wiki-link:hover {
+            opacity: 1;
+        }
+
+        .amount-cell {
+            font-weight: 600;
+            color: var(--danger-color);
+            text-align: right;
+        }
+
+        .address-cell {
+            max-width: 300px;
+            word-break: break-all;
+            line-height: 1.4;
+        }
+
+        .punishment-cell {
+            max-width: 200px;
+            line-height: 1.4;
+        }
+
+        /* Badges and Tags */
+        .area-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            background-color: #e0f2fe;
+            color: #0369a1;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-公認 {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-非公認 {
+            background-color: #fed7d7;
+            color: #9b2c2c;
+        }
+
+        .status-無所属 {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background-color: #fef3c7;
+            color: #92400e;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Loading and Error States */
+        .loading-indicator {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 16px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .tab-button {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+
+            .tab-text {
+                display: none;
+            }
+
+            .filter-container {
+                flex-direction: column;
+            }
+
+            .stats-container {
+                flex-direction: column;
+            }
+
+            table {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 10px 8px;
+            }
+
+            .name-cell {
+                min-width: 140px;
+            }
+
+            .thumbnail-container {
+                width: 40px;
+                height: 40px;
+            }
+
+            .name-container {
+                gap: 8px;
+            }
+
+            .name-info strong {
+                font-size: 0.85rem;
+            }
+
+            .address-cell {
+                max-width: 200px;
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .tab-navigation {
+                margin-bottom: 16px;
+            }
+
+            th, td {
+                padding: 8px 6px;
+            }
+
+            table {
+                font-size: 0.75rem;
+            }
+
+            .name-cell {
+                min-width: 120px;
+            }
+
+            .thumbnail-container {
+                width: 32px;
+                height: 32px;
+            }
+
+            .name-container {
+                gap: 6px;
+            }
+
+            .name-info strong {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background-color: white;
+                color: black;
+            }
+
+            .tab-navigation,
+            .search-container,
+            .filter-container,
+            .stats-container,
+            .loading-indicator,
+            .error-message {
+                display: none !important;
+            }
+
+            .container {
+                max-width: none;
+                padding: 0;
+            }
+
+            .table-container {
+                box-shadow: none;
+                border: 1px solid black;
+            }
+
+            table {
+                page-break-inside: avoid;
+            }
+
+            th, td {
+                border: 1px solid black;
+                padding: 8px;
+            }
+
+            .data-row:nth-child(even) {
+                background-color: transparent !important;
+            }
+
+            .data-row:hover {
+                background-color: transparent !important;
+            }
+        }
+
+        /* High Contrast Mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --border-color: #000000;
+                --text-secondary: #000000;
+                --background-color: #ffffff;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</body>
+</html>
+

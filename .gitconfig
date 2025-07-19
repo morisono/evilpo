@@ -1,0 +1,202 @@
+[user]
+	name = admin
+	email = example@email.com
+[credential]
+	helper = store
+[apply]
+	whitespace = fix
+[branch]
+	sort = -committerdate
+[core]
+	# Use custom `.gitignore` and `.gitattributes`.
+	excludesfile = ~/.gitignore
+	attributesfile = ~/.gitattributes
+
+	# Treat spaces before tabs and all kinds of trailing whitespace as an error.
+	# [default] trailing-space: looks for spaces at the end of a line
+	# [default] space-before-tab: looks for spaces before tabs at the beginning of a line
+	whitespace = space-before-tab,-indent-with-non-tab,trailing-space
+
+	# Make `git rebase` safer on macOS.
+	# More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
+	trustctime = false
+
+	# Prevent showing files whose names contain non-ASCII symbols as unversioned.
+	# http://michael-kuehnel.de/git/2014/11/21/git-mac-osx-and-german-umlaute.html
+	precomposeunicode = false
+
+	# Speed up commands involving untracked files such as `git status`.
+	# https://git-scm.com/docs/git-update-index#_untracked_cache
+	untrackedCache = true
+[color]
+	ui = auto
+[diff]
+	renames = copies
+[help]
+	autocorrect = 1
+[merge]
+	log = true
+[rebase]
+	autosquash = 1
+[pull]
+	rebase = 1
+[url "git@github.com:"]
+	insteadOf = "gh:"
+	pushInsteadOf = "github:"
+	pushInsteadOf = "git://github.com/"
+	autoSetupRemote = true
+[url "git://github.com/"]
+	insteadOf = "github:"
+[url "git@gist.github.com:"]
+	insteadOf = "gst:"
+	pushInsteadOf = "gist:"
+	pushInsteadOf = "git://gist.github.com/"
+[url "git://gist.github.com/"]
+	insteadOf = "gist:"
+[init]
+	defaultBranch = main
+
+[alias]
+	a = add
+	b = branch
+	c = clone --recursive
+	ca = !git add ':(exclude,attr:builtin_objectmode=160000)' && git commit -av
+	co = checkout
+	d = "!git diff-index --quiet HEAD -- || clear; git --no-pager diff --patch-with-stat"
+	# `git di $number` shows the diff between the state `$number` revisions ago and the current state.
+	di = !"d() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || clear; d"
+
+	f = fetch
+	# Switch to a branch, creating it if necessary.
+	go = "!f() { git checkout -b \"$1\" 2> /dev/null || git checkout \"$1\"; }; f"
+
+
+	l = log --pretty=oneline -n 20 --graph --abbrev-commit
+	m = merge
+
+	# New worktree: git n feature awesome → {branch:feature/awesome, path:.git/worktree/feature/awesome}
+	n = "!f() { \
+		prefix=$1; \
+		name=$2; \
+		branch=\"$prefix/$name\"; \
+		path=\".git/worktree/$prefix/$name\"; \
+		git worktree add -b \"$branch\" \"$path\"; \
+		}; f"
+
+	p = pull --recurse-submodules
+	pp = push
+	q = merge --squash
+	# remove unstaged files
+	r = reset HEAD --
+	# remove uncommited files
+	rr = reset HEAD --hard
+	s = status -s
+	t = tag -l | sort -V
+	u = clean -fd
+
+	w = whatchanged -p --abbrev-commit --pretty=medium
+
+	credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
+
+	# Find branches containing commit
+	fb = "!f() { git branch -a --contains $1; }; f"
+
+	# Find tags containing commit
+	ft = "!f() { git describe --always --contains $1; }; f"
+
+	# Find commits by source code
+	fc = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; f"
+
+	# Find commits by commit message
+	fm = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; f"
+
+	# Remove branches that have already been merged with main.
+	# a.k.a. ‘delete merged’
+	dm = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
+
+	# List contributors with number of commits.
+	contributors = shortlog --summary --numbered
+
+	# Interactive rebase with the given number of latest commits.
+	reb = "!r() { git rebase -i HEAD~$1; }; r"
+
+	# Remove the old tag with this name and tag the latest commit with it.
+	retag = "!r() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; r"
+
+	# Show the user email for the current repository.
+	whoami = config user.email
+
+	# Show the most recent branches with commit date, author, and subject.
+	recent = "!git branch --sort=-committerdate --format='%(HEAD) %(refname:short);%(committerdate:relative);%(authorname);%(subject)' | column -t -s ';'"
+
+	rename = "!f() { \
+		from=$1; to=$2; \
+		git ls-files \
+		| grep -E \"$from\" \
+		| while read f; do \
+		new=$(echo \"$f\" | sed -E \"s/$from/$to/\"); \
+		git mv -vk \"$f\" \"$new\" || echo \"skip: $f\" >&2; \
+		done; \
+	}; f"
+
+	tree = "!f() { \
+		tree -J --prune --gitignore \"${1:-.}\" \
+		| jq ' \
+			def rec: \
+			if .type == \"directory\" then \
+				{(.name): (.contents // [] | map(rec))} \
+			elif .type == \"file\" then \
+				.name \
+			end; \
+			[.[0] | rec] \
+		' \
+		| yq eval -P; \
+	}; f"
+
+	diff-dir = "!f() { \
+		external_path=\"$1\"; \
+		if [ ! -d \"$external_path\" ]; then \
+			echo \"Error: Directory '$external_path' does not exist\" >&2; \
+			return 1; \
+		fi; \
+		current_path=\"$(pwd)\"; \
+		echo \"Comparing current directory with: $external_path\"; \
+		echo \"Legend: Files marked with '+' exist only in external, '-' only in current\"; \
+		echo \"\"; \
+		(cd \"$external_path\" && find . -type f ! -path './.git/*' ! -path './node_modules/*' ! -path './dist/*' ! -path './build/*' ! -path './.vite/*' ! -path './coverage/*' ! -path './packages/*/node_modules/*' | sort) > /tmp/external_files.txt; \
+		(find . -type f ! -path './.git/*' ! -path './node_modules/*' ! -path './dist/*' ! -path './build/*' ! -path './.vite/*' ! -path './coverage/*' ! -path './packages/*/node_modules/*' | sort) > /tmp/current_files.txt; \
+		echo \"=== Files only in external directory ===\"; \
+		comm -23 /tmp/external_files.txt /tmp/current_files.txt | head -20 | while read file; do \
+			echo \"+ $file\"; \
+		done; \
+		external_only_count=$(comm -23 /tmp/external_files.txt /tmp/current_files.txt | wc -l); \
+		if [ \"$external_only_count\" -gt 20 ]; then \
+			echo \"... and $((external_only_count - 20)) more files\"; \
+		fi; \
+		echo \"\"; \
+		echo \"=== Files only in current directory ===\"; \
+		comm -13 /tmp/external_files.txt /tmp/current_files.txt | head -20 | while read file; do \
+			echo \"- $file\"; \
+		done; \
+		current_only_count=$(comm -13 /tmp/external_files.txt /tmp/current_files.txt | wc -l); \
+		if [ \"$current_only_count\" -gt 20 ]; then \
+			echo \"... and $((current_only_count - 20)) more files\"; \
+		fi; \
+		echo \"\"; \
+		echo \"=== File differences ===\"; \
+		comm -12 /tmp/external_files.txt /tmp/current_files.txt | while read file; do \
+			if ! cmp -s \"$external_path/$file\" \"./$file\" 2>/dev/null; then \
+				echo \">>> Diff for: $file <<<\"; \
+				diff -u \"./$file\" \"$external_path/$file\" 2>/dev/null || echo \"Binary files differ: $file\"; \
+				echo \"\"; \
+			fi; \
+		done; \
+		rm -f /tmp/external_files.txt /tmp/current_files.txt; \
+	}; f"
+
+	rename-branch = "!f() { \\\n	[ -z \"$2\" ] && o=$(git current) || o=$1 && n=${2:-$1} \\\n	&& git branch -m $@ && echo \"Rename branch $o to $n\" \\\n; }; f"
+	rename-all-branch = "!f() { \\\n	[ -z \"$2\" ] && o=$(git current) || o=$1 && n=${2:-$1} \\\n	&& git branch -m $@ && git push origin -u $n && git push origin -d $o \\\n	&& echo \"Rename branch $o to $n (local & origin)\" \\\n; }; f"
+
+	zip = "!f() { git archive $1 --format=zip --output=$1.zip; };zip = "!f() { git archive $1 --format=zip --output=$1.zip; }; zip = "!f() { git archive $1 --format=zip --output=$1.zip; };	};	zip = "!f() { git archive $1 --format=zip --output=$1.zip; }; zip = "!f() { git archive $1 --format=zip --output=$1.zip; };zip = "!f() { git archive $1 --format=zip --output=$1.zip; }; zip = "!f() { git archive $1 --format=zip --output=$1.zip; };			"
+
+	delete-merged-branch = "!f() { \\\n	echo -n \"Do you want to delete all merged branches [yn]? \" && exec </dev/tty && read r \\\n	&& [ \"$r\" != \"y\" ] && echo \"Cancelled!\" || (echo \"OK! Remove all\" \\\n	&& git merged $1 | xargs git branch -d) \\\n; }; f"
