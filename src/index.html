@@ -3,12 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>議員データベース</title>
+
+    <!-- Primary Meta Tags -->
+    <title>政治家データベース - 裏金・壺議員の詳細情報 | 政治腐敗追跡システム</title>
+    <meta name="title" content="政治家データベース - 裏金・壺議員の詳細情報 | 政治腐敗追跡システム">
+    <meta name="description" content="日本の政治腐敗を暴く完全データベース。裏金議員46名・壺議員33名の詳細情報、金額、処分状況を網羅。リアルタイム検索・フィルタリング機能付き。政治の闇を可視化し、有権者の判断材料を提供する革新的プラットフォーム。">
+    <meta name="keywords" content="政治家データベース,裏金議員,壺議員,政治腐敗,自民党,政治資金,不正,スキャンダル,選挙,政治家,日本政治">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="Japanese">
+    <meta name="author" content="Political Transparency Initiative">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://example.com/giin-database">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://example.com/giin-database">
+    <meta property="og:title" content="政治家データベース - 裏金・壺議員の詳細情報 | 政治腐敗追跡システム">
+    <meta property="og:description" content="日本の政治腐敗を暴く完全データベース。裏金議員46名・壺議員33名の詳細情報、金額、処分状況を網羅。リアルタイム検索・フィルタリング機能付き。政治の闇を可視化し、有権者の判断材料を提供する革新的プラットフォーム。">
+    <meta property="og:image" content="https://example.com/images/giin-database-cover-1200x630.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="政治家データベース - 政治腐敗可視化システム">
+    <meta property="og:site_name" content="政治家データベース">
+    <meta property="og:locale" content="ja_JP">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://example.com/giin-database">
+    <meta property="twitter:title" content="政治家データベース - 裏金・壺議員の詳細情報">
+    <meta property="twitter:description" content="日本の政治腐敗を暴く完全データベース。裏金議員46名・壺議員33名の詳細情報、金額、処分状況を網羅。政治の闇を可視化し、有権者の判断材料を提供。">
+    <meta property="twitter:image" content="https://example.com/images/giin-database-cover-1200x630.jpg">
+    <meta property="twitter:image:alt" content="政治家データベース - 政治腐敗可視化システム">
+    <meta property="twitter:creator" content="@political_truth">
+    <meta property="twitter:site" content="@giin_database">
+
+    <!-- Additional Meta Tags -->
+    <meta name="theme-color" content="#dc2626">
+    <meta name="msapplication-TileColor" content="#dc2626">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="政治家DB">
+
+    <!-- Evil Politician Icon Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxyYWRpYWxHcmFkaWVudCBpZD0iZXZpbCIgY3g9IjUwJSIgY3k9IjUwJSIgcj0iNTAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzk5MWIxYiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjMwJSIgc3RvcC1jb2xvcj0iI2RjMjYyNiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMxYTBmMGYiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9Imhvcm4iIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZGMyNjI2Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzc5MWExYSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgCiAgPCEtLSBEYXJrIGJhY2tncm91bmQgY2lyY2xlIC0tPgogIDxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjE1IiBmaWxsPSJ1cmwoI2V2aWwpIiBzdHJva2U9IiNkYzI2MjYiIHN0cm9rZS13aWR0aD0iMS41Ii8+CiAgCiAgPCEtLSBIb3JucyAtLT4KICA8cGF0aCBkPSJNIDEwIDYgTCA4IDIgTCAxMyA0IFoiIGZpbGw9InVybCgjaG9ybikiIHN0cm9rZT0iIzMzMDAwMCIgc3Ryb2tlLXdpZHRoPSIwLjUiLz4KICA8cGF0aCBkPSJNIDIyIDYgTCAyNCAyIEwgMTkgNCBaIiBmaWxsPSJ1cmwoI2hvcm4pIiBzdHJva2U9IiMzMzAwMDAiIHN0cm9rZS13aWR0aD0iMC41Ii8+CiAgCiAgPCEtLSBHbG93aW5nIGV2aWwgZXllcyAtLT4KICA8ZWxsaXBzZSBjeD0iMTEiIGN5PSIxMiIgcng9IjIuNSIgcnk9IjMiIGZpbGw9IiNmZjAwMDAiPgogICAgPGFuaW1hdGUgYXR0cmlidXRlTmFtZT0iZmlsbCIgdmFsdWVzPSIjZmYwMDAwOyNmZjMzMzM7I2ZmMDAwMCIgZHVyPSIycyIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiLz4KICA8L2VsbGlwc2U+CiAgPGVsbGlwc2UgY3g9IjIxIiBjeT0iMTIiIHJ4PSIyLjUiIHJ5PSIzIiBmaWxsPSIjZmYwMDAwIj4KICAgIDxhbmltYXRlIGF0dHJpYnV0ZU5hbWU9ImZpbGwiIHZhbHVlcz0iI2ZmMDAwMDsjZmYzMzMzOyNmZjAwMDAiIGR1cj0iMnMiIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIi8+CiAgPC9lbGxpcHNlPgogIAogIDwhLS0gRXllIHB1cGlscyAtLT4KICA8Y2lyY2xlIGN4PSIxMSIgY3k9IjEyIiByPSIxIiBmaWxsPSIjMDAwMDAwIi8+CiAgPGNpcmNsZSBjeD0iMjEiIGN5PSIxMiIgcj0iMSIgZmlsbD0iIzAwMDAwMCIvPgogIAogIDwhLS0gU2luaXN0ZXIgc21pbGUgLS0+CiAgPHBhdGggZD0iTSA4IDIyIFEgMTYgMTkgMjQgMjIiIHN0cm9rZT0iI2ZmMDAwMCIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8IS0tIEZhbmdzIC0tPgogIDxwb2x5Z29uIHBvaW50cz0iMTEsMjAgMTIsMjQgMTMsMjAiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2ZmMDAwMCIgc3Ryb2tlLXdpZHRoPSIwLjUiLz4KICA8cG9seWdvbiBwb2ludHM9IjE5LDIwIDIwLDI0IDIxLDIwIiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNmZjAwMDAiIHN0cm9rZS13aWR0aD0iMC41Ii8+CiAgCiAgPCEtLSBNb25leSBzeW1ib2wgKFlFTikgLS0+CiAgPHRleHQgeD0iMTYiIHk9IjI5IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNyIgZmlsbD0iI2ZlY2FjYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC13ZWlnaHQ9ImJvbGQiIG9wYWNpdHk9IjAuOSI+wqU8L3RleHQ+Cjwvc3ZnPgo=">
+
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDE4MCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImV2aWxBcHBsZSIgY3g9IjUwJSIgY3k9IjUwJSIgcj0iNTAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzk5MWIxYiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjMwJSIgc3RvcC1jb2xvcj0iI2RjMjYyNiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMxYTBmMGYiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9Imhvcm5BcHBsZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNkYzI2MjYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjNzkxYTFhIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KCiAgPCEtLSBEYXJrIGJhY2tncm91bmQgLS0+CiAgPHJlY3Qgd2lkdGg9IjE4MCIgaGVpZ2h0PSIxODAiIGZpbGw9IiMwZjBhMGEiIHJ4PSIyMCIvPgogIAogIDwhLS0gTWFpbiBldmlsIGZhY2UgLS0+CiAgPGNpcmNsZSBjeD0iOTAiIGN5PSI5MCIgcj0iNzAiIGZpbGw9InVybCgjZXZpbEFwcGxlKSIgc3Ryb2tlPSIjZGMyNjI2IiBzdHJva2Utd2lkdGg9IjQiLz4KICAKICA8IS0tIEhvcm5zIC0tPgogIDxwYXRoIGQ9Ik0gNTUgMzUgTCA0NSAxMCBMIDcwIDI1IFoiIGZpbGw9InVybCgjaG9ybkFwcGxlKSIgc3Ryb2tlPSIjMzMwMDAwIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8cGF0aCBkPSJNIDEyNSAzNSBMIDEzNSAxMCBMIDExMCAyNSBaIiBmaWxsPSJ1cmwoI2hvcm5BcHBsZSkiIHN0cm9rZT0iIzMzMDAwMCIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgCiAgPCEtLSBHbG93aW5nIGV2aWwgZXllcyAtLT4KICA8ZWxsaXBzZSBjeD0iNjUiIGN5PSI3NSIgcng9IjEyIiByeT0iMTUiIGZpbGw9IiNmZjAwMDAiLz4KICA8ZWxsaXBzZSBjeD0iMTE1IiBjeT0iNzUiIHJ4PSIxMiIgcnk9IjE1IiBmaWxsPSIjZmYwMDAwIi8+CiAgCiAgPCEtLSBFeWUgcHVwaWxzIC0tPgogIDxjaXJjbGUgY3g9IjY1IiBjeT0iNzUiIHI9IjUiIGZpbGw9IiMwMDAwMDAiLz4KICA8Y2lyY2xlIGN4PSIxMTUiIGN5PSI3NSIgcj0iNSIgZmlsbD0iIzAwMDAwMCIvPgogIAogIDwhLS0gU2luaXN0ZXIgc21pbGUgLS0+CiAgPHBhdGggZD0iTSA0NSAxMjAgUSA5MCAzNSAxMzUgMTIwIiBzdHJva2U9IiNmZjAwMDAiIHN0cm9rZS13aWR0aD0iNiIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgCiAgPCEtLSBGYW5ncyAtLT4KICA8cG9seWdvbiBwb2ludHM9IjYwLDExNSA2NSwyNSA3MCwxMTUiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2ZmMDAwMCIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPHBvbHlnb24gcG9pbnRzPSIxMTAsMTE1IDExNSwyNSAxMjAsMTE1IiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNmZjAwMDAiIHN0cm9rZS13aWR0aD0iMiIvPgogIAogIDwhLS0gTW9uZXkgc3ltYm9sIChZRU4pIC0tPgogIDx0ZXh0IHg9IjkwIiB5PSIxNTUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIzNSIgZmlsbD0iI2ZlY2FjYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC13ZWlnaHQ9ImJvbGQiIG9wYWNpdHk9IjAuOSI+wqU8L3RleHQ+CiAgCiAgPCEtLSBTaGFkb3cgZWZmZWN0IC0tPgogIDxjaXJjbGUgY3g9IjkwIiBjeT0iMTYwIiByeD0iNjAiIHJ5PSIxNSIgZmlsbD0iIzAwMDAwMCIgb3BhY2l0eT0iMC4zIi8+Cjwvc3ZnPgo=">
+
+    <!-- Safari Pinned Tab -->
+    <link rel="mask-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0iYmxhY2siIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTQiLz4KICA8cGF0aCBkPSJNIDEwIDYgTCA4IDIgTCAxMyA0IFoiLz4KICA8cGF0aCBkPSJNIDIyIDYgTCAyNCAyIEwgMTkgNCBaIi8+CiAgPGVsbGlwc2UgY3g9IjExIiBjeT0iMTIiIHJ4PSIyLjUiIHJ5PSIzIi8+CiAgPGVsbGlwc2UgY3g9IjIxIiBjeT0iMTIiIHJ4PSIyLjUiIHJ5PSIzIi8+CiAgPHBhdGggZD0iTSA4IDIyIFEgMTYgMTkgMjQgMjIiIHN0cm9rZT0iYmxhY2siIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPgo8L3N2Zz4K" color="#dc2626">
+
+    <!-- Microsoft Tile -->
+    <meta name="msapplication-TileImage" content="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0IiBoZWlnaHQ9IjE0NCIgdmlld0JveD0iMCAwIDE0NCAxNDQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGRlZnM+CiAgICA8cmFkaWFsR3JhZGllbnQgaWQ9ImV2aWxUaWxlIiBjeD0iNTAlIiBjeT0iNTAlIiByPSI1MCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjOTkxYjFiIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMzAlIiBzdG9wLWNvbG9yPSIjZGMyNjI2Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzFhMGYwZiIvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjE0NCIgaGVpZ2h0PSIxNDQiIGZpbGw9IiMwZjBhMGEiLz4KICA8Y2lyY2xlIGN4PSI3MiIgY3k9IjcyIiByPSI1NSIgZmlsbD0idXJsKCNldmlsVGlsZSkiLz4KICA8cGF0aCBkPSJNIDQ0IDI4IEwgMzYgOCBMIDU2IDIwIFoiIGZpbGw9IiNkYzI2MjYiLz4KICA8cGF0aCBkPSJNIDEwMCAyOCBMIDEwOCA4IEwgODggMjAgWiIgZmlsbD0iI2RjMjYyNiIvPgogIDxlbGxpcHNlIGN4PSI1MiIgY3k9IjYwIiByeD0iMTAiIHJ5PSIxMiIgZmlsbD0iI2ZmMDAwMCIvPgogIDxlbGxpcHNlIGN4PSI5MiIgY3k9IjYwIiByeD0iMTAiIHJ5PSIxMiIgZmlsbD0iI2ZmMDAwMCIvPgogIDxjaXJjbGUgY3g9IjUyIiBjeT0iNjAiIHI9IjQiIGZpbGw9IiMwMDAwMDAiLz4KICA8Y2lyY2xlIGN4PSI5MiIgY3k9IjYwIiByPSI0IiBmaWxsPSIjMDAwMDAwIi8+CiAgPHBhdGggZD0iTSAzNiA5NiBRIDcyIDI4IDEwOCA5NiIgc3Ryb2tlPSIjZmYwMDAwIiBzdHJva2Utd2lkdGg9IjUiIGZpbGw9Im5vbmUiLz4KICA8dGV4dCB4PSI3MiIgeT0iMTI0IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjgiIGZpbGw9IiNmZWNhY2EiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtd2VpZ2h0PSJib2xkIj7CpTwvdGV4dD4KPC9zdmc+Cg==">
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Image Optimization Styles -->
+    <link rel="stylesheet" href="/src/css/image-optimization.css">
+
+    <!-- Name Display Styles -->
+    <link rel="stylesheet" href="/src/css/name-display.css">
+
+    <!-- Preload critical images -->
+    <link rel="preload" as="image" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPC9zdmc+Cg==" />
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/src/sw.js').then(() => {
+                console.log('Service Worker registered');
+            }).catch(err => {
+                console.log('Service Worker registration failed', err);
+            });
+        }
+    </script>
 </head>
 <body>
+    <!-- Warning Dialog -->
+    <div id="warning-dialog" class="warning-overlay" style="display: none;">
+        <div class="warning-dialog">
+            <div class="warning-header">
+                <div class="warning-icon">⚠️</div>
+                <h2 class="warning-title">WARNING</h2>
+                <div class="warning-icon">⚠️</div>
+            </div>
+            <div class="warning-content">
+                <p class="warning-message">This website contains adult content intended for mature audiences. By continuing, you confirm you are at least 18 years old.</p>
+            </div>
+            <div class="warning-actions">
+                <button id="warning-continue" class="warning-btn warning-btn-continue">Continue</button>
+                <button id="warning-normal-mode" class="warning-btn warning-btn-normal">Switch to Normal Mode</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Dark Mode Toggle -->
     <button class="theme-toggle" id="theme-toggle" aria-label="テーマを切り替え" title="ダークモード/ライトモード切り替え">
         <div class="theme-toggle-track">
@@ -25,15 +117,15 @@
 
     <div class="container">
         <header>
-            <h1>議員データベース</h1>
+            <h1>政治家データベース</h1>
             <p class="subtitle">裏金議員・壺議員の詳細情報</p>
         </header>
 
         <!-- Trending Politicians Slider -->
         <div class="trending-slider-container">
             <div class="trending-header">
-                <h2>🔥 注目の議員 TOP 10</h2>
-                <p>裏金金額上位ランキング</p>
+                <p>🔥 注目の政治家 TOP 10</p>
+                <p>~ 裏金金額上位ランキング ~</p>
             </div>
             <div class="trending-slider">
                 <button class="slider-arrow slider-arrow-left" aria-label="前へ">
@@ -68,18 +160,39 @@
             </button>
         </nav>
 
-        <div class="search-container">
-            <input type="text" id="search-input" placeholder="議員名、選挙区、エリアで検索..." autocomplete="off">
-            <button id="clear-search" aria-label="検索をクリア">×</button>
-        </div>
+        <!-- Controls Container -->
+        <div class="controls-container">
+            <div class="search-filter-section">
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="政治家名、選挙区、エリアで検索..." autocomplete="off">
+                    <button id="clear-search" aria-label="検索をクリア">×</button>
+                </div>
 
-        <div class="filter-container">
-            <select id="area-filter">
-                <option value="">すべてのエリア</option>
-            </select>
-            <select id="status-filter">
-                <option value="">すべてのステータス</option>
-            </select>
+                <div class="filter-container">
+                    <select id="area-filter">
+                        <option value="">すべてのエリア</option>
+                    </select>
+                    <select id="status-filter">
+                        <option value="">すべてのステータス</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- View Toggle UI -->
+            <div class="view-controls">
+                <div class="view-toggle-group">
+                    <button id="list-view-btn" class="view-btn active" aria-label="リスト表示" title="リスト表示">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+                        </svg>
+                    </button>
+                    <button id="grid-view-btn" class="view-btn" aria-label="グリッド表示" title="グリッド表示">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 3v8h8V3H3zm6 6H5V5h4v4zm-6 4v8h8v-8H3zm6 6H5v-4h4v4zm4-16v8h8V3h-8zm6 6h-4V5h4v4zm-6 4v8h8v-8h-8zm6 6h-4v-4h4v4z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
         </div>
 
         <div class="stats-container">
@@ -93,22 +206,6 @@
             </div>
         </div>
 
-        <!-- View Toggle UI -->
-        <div class="view-controls">
-            <div class="view-toggle-group">
-                <button id="list-view-btn" class="view-btn active" aria-label="リスト表示" title="リスト表示">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
-                    </svg>
-                </button>
-                <button id="grid-view-btn" class="view-btn" aria-label="グリッド表示" title="グリッド表示">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3 3v8h8V3H3zm6 6H5V5h4v4zm-6 4v8h8v-8H3zm6 6H5v-4h4v4zm4-16v8h8V3h-8zm6 6h-4V5h4v4zm-6 4v8h8v-8h-8zm6 6h-4v-4h4v4z"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-
         <div class="tab-content">
             <div id="uragane-content" class="tab-panel active">
                 <div class="table-container">
@@ -118,12 +215,66 @@
                         </caption>
                         <thead>
                             <tr>
-                                <th style="width: 180px;">名前・写真</th>
-                                <th>選挙区</th>
-                                <th>エリア</th>
-                                <th>裏金金額</th>
-                                <th>公認・非公認</th>
-                                <th>党の処分</th>
+                                <th style="width: 180px;">
+                                    <div class="header-content">
+                                        <span>名前・写真</span>
+                                        <button class="sort-btn" data-column="名前" aria-label="名前で並び替え">
+                                            <svg class="sort-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M7 10l5 5 5-5z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>選挙区</span>
+                                        <button class="sort-btn" data-column="選挙区" aria-label="選挙区で並び替え">
+                                            <svg class="sort-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M7 10l5 5 5-5z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>エリア</span>
+                                        <button class="sort-btn" data-column="エリア" aria-label="エリアで並び替え">
+                                            <svg class="sort-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M7 10l5 5 5-5z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>裏金金額</span>
+                                        <button class="sort-btn" data-column="裏金金額" aria-label="裏金金額で並び替え">
+                                            <svg class="sort-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M7 10l5 5 5-5z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>公認・非公認</span>
+                                        <button class="sort-btn" data-column="公認・非公認" aria-label="公認状況で並び替え">
+                                            <svg class="sort-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M7 10l5 5 5-5z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>党の処分</span>
+                                        <button class="sort-btn" data-column="党の処分" aria-label="党の処分で並び替え">
+                                            <svg class="sort-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M7 10l5 5 5-5z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
                         <tbody id="uragane-tbody">
@@ -166,9 +317,36 @@
                         </caption>
                         <thead>
                             <tr>
-                                <th style="width: 180px;">名前・写真</th>
-                                <th>住所</th>
-                                <th>分類</th>
+                                <th style="width: 180px;">
+                                    <div class="header-content">
+                                        <span>名前・写真</span>
+                                        <button class="sort-btn" data-column="名前" aria-label="名前で並び替え">
+                                            <svg class="sort-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M7 10l5 5 5-5z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>住所</span>
+                                        <button class="sort-btn" data-column="住所" aria-label="住所で並び替え">
+                                            <svg class="sort-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M7 10l5 5 5-5z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="header-content">
+                                        <span>分類</span>
+                                        <button class="sort-btn" data-column="分類" aria-label="分類で並び替え">
+                                            <svg class="sort-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M7 10l5 5 5-5z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
                         <tbody id="tsubo-tbody">
@@ -418,12 +596,140 @@
             WIKIPEDIA_API_DELAY: 100
         };
 
+        // Name mapping for furigana and English romanization
+        const nameMapping = {
+            '石破茂': { furigana: 'いしば しげる', english: 'Ishiba Shigeru' },
+            '和田義明': { furigana: 'わだ よしあき', english: 'Wada Yoshiaki' },
+            '木村次郎': { furigana: 'きむら じろう', english: 'Kimura Jiro' },
+            '藤原崇': { furigana: 'ふじわら たかし', english: 'Fujiwara Takashi' },
+            '西村明宏': { furigana: 'にしむら あきひろ', english: 'Nishimura Akihiro' },
+            '亀岡偉民': { furigana: 'かめおか ひでたみ', english: 'Kameoka Hidetami' },
+            '上杉謙太郎': { furigana: 'うえすぎ けんたろう', english: 'Uesugi Kentaro' },
+            '梁和生': { furigana: 'りゃん かずお', english: 'Ryo Kazuo' },
+            '福田達夫': { furigana: 'ふくだ たつお', english: 'Fukuda Tatsuo' },
+            '中根ー幸': { furigana: 'なかね かずゆき', english: 'Nakane Kazuyuki' },
+            '柴山昌彦': { furigana: 'しばやま まさひこ', english: 'Shibayama Masahiko' },
+            '大塚拓': { furigana: 'おおつか たく', english: 'Otsuka Taku' },
+            '三ツ林裕巳': { furigana: 'みつばやし ひろみ', english: 'Mitsubayashi Hiromi' },
+            '松野博ー': { furigana: 'まつの ひろかず', english: 'Matsuno Hirokazu' },
+            '山田美樹': { furigana: 'やまだ みき', english: 'Yamada Miki' },
+            '丸川珠代': { furigana: 'まるかわ たまよ', english: 'Marukawa Tamayo' },
+            '下村博文': { furigana: 'しもむら はくぶん', english: 'Shimomura Hakubun' },
+            '平沢勝栄': { furigana: 'ひらさわ かつえい', english: 'Hirasawa Katsuei' },
+            '小田原潔': { furigana: 'おだわら きよし', english: 'Odawara Kiyoshi' },
+            '荻生田光一': { furigana: 'はぎうだ こういち', english: 'Hagiuda Koichi' },
+            '萩生田光一': { furigana: 'はぎうだ こういち', english: 'Hagiuda Koichi' },
+            '義家弘介': { furigana: 'よしいえ ひろゆき', english: 'Yoshiie Hiroyuki' },
+            '細田健一': { furigana: 'ほそだ けんいち', english: 'Hosoda Kenichi' },
+            '高鳥修一': { furigana: 'たかとり しゅういち', english: 'Takatori Shuichi' },
+            '田畑裕明': { furigana: 'たばた ひろあき', english: 'Tabata Hiroaki' },
+            '小森卓郎': { furigana: 'こもり たくろう', english: 'Komori Takuro' },
+            '佐々木紀': { furigana: 'ささき のり', english: 'Sasaki Nori' },
+            '稲田朋美': { furigana: 'いなだ ともみ', english: 'Inada Tomomi' },
+            '高木毅': { furigana: 'たかぎ つよし', english: 'Takagi Tsuyoshi' },
+            '若林健太': { furigana: 'わかばやし けんた', english: 'Wakabayashi Kenta' },
+            '宮下一郎': { furigana: 'みやした いちろう', english: 'Miyashita Ichiro' },
+            '宮沢博行': { furigana: 'みやざわ ひろゆき', english: 'Miyazawa Hiroyuki' },
+            '宮澤博行': { furigana: 'みやざわ ひろゆき', english: 'Miyazawa Hiroyuki' },
+            '鈴木淳司': { furigana: 'すずき じゅんじ', english: 'Suzuki Junji' },
+            '青山周平': { furigana: 'あおやま しゅうへい', english: 'Aoyama Shuhei' },
+            '根本幸典': { furigana: 'ねもと ゆきのり', english: 'Nemoto Yukinori' },
+            '鈴木英敬': { furigana: 'すずき えいけい', english: 'Suzuki Eikei' },
+            '中山泰秀': { furigana: 'なかやま やすひで', english: 'Nakayama Yasuhide' },
+            '加納陽之助': { furigana: 'かのう ようのすけ', english: 'Kano Yonosuke' },
+            '示清皇ー': { furigana: 'しめきよ こういち', english: 'Shimekiyo Koichi' },
+            '谷川とむ': { furigana: 'たにがわ とむ', english: 'Tanigawa Tom' },
+            '関芳弘': { furigana: 'せき よしひろ', english: 'Seki Yoshihiro' },
+            '西村康稔': { furigana: 'にしむら やすとし', english: 'Nishimura Yasutoshi' },
+            '世耕弘成': { furigana: 'せこう ひろしげ', english: 'Seko Hiroshige' },
+            '井原巧': { furigana: 'いはら たくみ', english: 'Ihara Takumi' },
+            '宮内秀樹': { furigana: 'みやうち ひでき', english: 'Miyauchi Hideki' },
+            '武田良太': { furigana: 'たけだ りょうた', english: 'Takeda Ryota' },
+            '加藤竜祥': { furigana: 'かとう りゅうしょう', english: 'Kato Ryusho' },
+            '衛藤征士郎': { furigana: 'えとう せいしろう', english: 'Eto Seishiro' },
+            '岸信夫': { furigana: 'きし のぶお', english: 'Kishi Nobuo' },
+            '熊田裕通': { furigana: 'くまだ ひろみち', english: 'Kumada Hiromichi' },
+            '斎藤洋明': { furigana: 'さいとう ひろあき', english: 'Saito Hiroaki' },
+            '坂井学': { furigana: 'さかい まなぶ', english: 'Sakai Manabu' },
+            '田野瀬田道': { furigana: 'たのせ たみち', english: 'Tanose Tamichi' },
+            '中川貴元': { furigana: 'なかがわ たかもと', english: 'Nakagawa Takamoto' },
+            '中村裕之': { furigana: 'なかむら ひろゆき', english: 'Nakamura Hiroyuki' },
+            '深澤陽一': { furigana: 'ふかざわ よういち', english: 'Fukazawa Yoichi' },
+            '星野剛士': { furigana: 'ほしの つよし', english: 'Hoshino Tsuyoshi' },
+            '北村経夫': { furigana: 'きたむら つねお', english: 'Kitamura Tsuneo' },
+            'こやり隆史': { furigana: 'こやり たかし', english: 'Koyari Takashi' },
+            '船橋利実': { furigana: 'ふなばし としみ', english: 'Funabashi Toshimi' },
+            '井上義行': { furigana: 'いのうえ よしゆき', english: 'Inoue Yoshiyuki' },
+            '赤澤亮正': { furigana: 'あかざわ りょうせい', english: 'Akazawa Ryosei' },
+            '甘利明': { furigana: 'あまり あきら', english: 'Amari Akira' },
+            '伊東良孝': { furigana: 'いとう よしたか', english: 'Ito Yoshitaka' },
+            '大岡敏孝': { furigana: 'おおおか としたか', english: 'Ooka Toshitaka' },
+            '木原稔': { furigana: 'きはら みのる', english: 'Kihara Minoru' },
+            '中谷真一': { furigana: 'なかたに しんいち', english: 'Nakatani Shinichi' },
+            '中山展宏': { furigana: 'なかやま のぶひろ', english: 'Nakayama Nobuhiro' },
+            '古川康': { furigana: 'ふるかわ やすし', english: 'Furukawa Yasushi' },
+            '務台俊介': { furigana: 'むたい しゅんすけ', english: 'Mutai Shunsuke' },
+            '山際大志郎': { furigana: 'やまぎわ だいしろう', english: 'Yamagiwa Daishiro' }
+        };
+
+        // Utility function to get name display information
+        function getNameInfo(name) {
+            const info = nameMapping[name];
+            return {
+                kanji: name,
+                furigana: info?.furigana || '',
+                english: info?.english || '',
+                searchTerms: [
+                    name,
+                    info?.furigana || '',
+                    info?.english || '',
+                    // Add variations like hiragana only version
+                    info?.furigana?.replace(/\s/g, '') || '',
+                    // Add katakana version if needed
+                    toKatakana(info?.furigana || ''),
+                    // Add mixed variations
+                    createMixedVariations(name, info?.furigana)
+                ].filter(Boolean).flat()
+            };
+        }
+
+        // Convert hiragana to katakana
+        function toKatakana(hiragana) {
+            return hiragana.replace(/[\u3041-\u3096]/g, function(match) {
+                const chr = match.charCodeAt(0) + 0x60;
+                return String.fromCharCode(chr);
+            });
+        }
+
+        // Create mixed kanji/hiragana variations
+        function createMixedVariations(kanji, furigana) {
+            if (!furigana) return [];
+
+            const variations = [];
+            const kanjiChars = kanji.split('');
+            const furiganaWords = furigana.split(' ');
+
+            // Create variations like "石破しげる" from "石破茂" and "いしば しげる"
+            if (kanjiChars.length >= 2 && furiganaWords.length >= 2) {
+                // First name in kanji, last name in hiragana
+                variations.push(kanjiChars[0] + kanjiChars[1] + furiganaWords[1]);
+                // First name in hiragana, last name in kanji
+                variations.push(furiganaWords[0] + kanjiChars.slice(2).join(''));
+            }
+
+            return variations;
+        }
+
         // State management
         let currentTab = 'uragane';
         let searchDebounceTimer = null;
         let currentData = [];
         let filteredData = [];
         let currentView = 'list'; // 'list' or 'grid'
+        let sortState = {
+            column: null,
+            direction: 'asc' // 'asc' or 'desc'
+        };
 
         // Theme management
         let currentTheme = 'dark'; // Default to dark mode
@@ -715,7 +1021,7 @@
                     trendingSlider.currentIndex += trendingSlider.itemsPerView;
                 }
                 updateSliderPosition();
-            }, 4000);
+            }, 12000);
         }
 
         function stopAutoPlay() {
@@ -776,26 +1082,47 @@
             }, 2000);
         }
 
+        // Load thumbnail for slider item
         async function loadSliderThumbnail(container, name, index) {
             try {
-                const thumbnailUrl = await fetchThumbnailWithDelay(name, index * 100);
+                // Use optimized image system
+                const optimizedImage = window.ImageOptimizer?.createOptimizedImage(
+                    `https://ja.wikipedia.org/api/rest_v1/page/media-list/${encodeURIComponent(name)}`,
+                    {
+                        width: 200,
+                        height: 240,
+                        priority: 'high',
+                        loading: 'eager',
+                        alt: `${name}の写真`,
+                        className: 'slider-politician-image'
+                    }
+                );
 
-                if (thumbnailUrl) {
-                    const img = document.createElement('img');
-                    img.src = thumbnailUrl;
-                    img.alt = `${name}の写真`;
-                    img.loading = 'lazy';
-
-                    img.onload = () => {
-                        container.innerHTML = '';
-                        container.appendChild(img);
-                    };
-
-                    img.onerror = () => {
-                        container.innerHTML = '<div class="thumbnail-error">📷</div>';
-                    };
+                if (optimizedImage) {
+                    container.innerHTML = '';
+                    container.appendChild(optimizedImage);
                 } else {
-                    container.innerHTML = '<div class="thumbnail-error">📷</div>';
+                    // Fallback to original method
+                    const thumbnailUrl = await fetchThumbnailWithDelay(name, index * 100);
+
+                    if (thumbnailUrl) {
+                        const img = document.createElement('img');
+                        img.src = thumbnailUrl;
+                        img.alt = `${name}の写真`;
+                        img.loading = 'eager';
+                        img.className = 'image-optimized priority-high';
+
+                        img.onload = () => {
+                            container.innerHTML = '';
+                            container.appendChild(img);
+                        };
+
+                        img.onerror = () => {
+                            container.innerHTML = '<div class="thumbnail-error">📷</div>';
+                        };
+                    } else {
+                        container.innerHTML = '<div class="thumbnail-error">📷</div>';
+                    }
                 }
             } catch (error) {
                 console.warn(`Failed to load slider thumbnail for ${name}:`, error);
@@ -823,6 +1150,8 @@
                 const sliderItem = document.createElement('div');
                 sliderItem.className = 'slider-item';
 
+                const nameInfo = getNameInfo(politician.名前);
+
                 sliderItem.innerHTML = `
                     <div class="slider-card" onclick="window.open('https://ja.wikipedia.org/wiki/${encodeURIComponent(politician.名前)}', '_blank')">
                         <div class="slider-rank-badge">${index + 1}</div>
@@ -832,7 +1161,13 @@
                             </div>
                         </div>
                         <div class="slider-content">
-                            <div class="slider-name">${politician.名前}</div>
+                            <div class="slider-name-section">
+                                ${nameInfo.furigana ? `<ruby class="slider-name-furigana">${nameInfo.furigana}</ruby>` : ''}
+                                <div class="slider-name-main">
+                                    <div class="slider-name">${politician.名前}</div>
+                                    ${nameInfo.english ? `<div class="slider-name-english">(${nameInfo.english})</div>` : ''}
+                                </div>
+                            </div>
                             <div class="slider-amount">${politician.裏金金額}</div>
                             <div class="slider-details">
                                 <div class="slider-detail-row">
@@ -966,6 +1301,76 @@
             };
         }
 
+        // Sorting functionality
+        function sortData(column) {
+            // Toggle sort direction if same column, otherwise set to ascending
+            if (sortState.column === column) {
+                sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortState.column = column;
+                sortState.direction = 'asc';
+            }
+
+            // Sort the filtered data
+            filteredData.sort((a, b) => {
+                let valueA = a[column] || '';
+                let valueB = b[column] || '';
+
+                // Special handling for monetary amounts
+                if (column === '裏金金額') {
+                    valueA = parseAmount(valueA);
+                    valueB = parseAmount(valueB);
+                } else {
+                    // Convert to string for text comparison
+                    valueA = valueA.toString().toLowerCase();
+                    valueB = valueB.toString().toLowerCase();
+                }
+
+                let comparison = 0;
+                if (valueA > valueB) {
+                    comparison = 1;
+                } else if (valueA < valueB) {
+                    comparison = -1;
+                }
+
+                return sortState.direction === 'desc' ? comparison * -1 : comparison;
+            });
+
+            // Reset pagination to first page
+            paginationState[currentTab].currentPage = 1;
+
+            // Update sort button states
+            updateSortButtons();
+
+            // Re-render the current view
+            renderCurrentView();
+        }
+
+        function updateSortButtons() {
+            // Reset all sort buttons
+            document.querySelectorAll('.sort-btn').forEach(btn => {
+                btn.classList.remove('active', 'asc', 'desc');
+            });
+
+            // Highlight active sort button
+            if (sortState.column) {
+                const activeBtn = document.querySelector(`[data-column="${sortState.column}"]`);
+                if (activeBtn) {
+                    activeBtn.classList.add('active', sortState.direction);
+                }
+            }
+        }
+
+        function initSortButtons() {
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.sort-btn')) {
+                    const btn = e.target.closest('.sort-btn');
+                    const column = btn.dataset.column;
+                    sortData(column);
+                }
+            });
+        }
+
         // Filter data based on search and filters
         function filterData() {
             const searchTerm = document.getElementById('search-input').value.toLowerCase();
@@ -973,10 +1378,22 @@
             const statusFilter = document.getElementById('status-filter').value;
 
             filteredData = currentData.filter(item => {
-                const matchesSearch = searchTerm === '' ||
-                    Object.values(item).some(value =>
+                // Enhanced search functionality
+                const matchesSearch = searchTerm === '' || (() => {
+                    const nameInfo = getNameInfo(item.名前);
+
+                    // Check all search terms for this person
+                    const searchInTerms = nameInfo.searchTerms.some(term =>
+                        term.toLowerCase().includes(searchTerm)
+                    );
+
+                    // Also check other fields
+                    const searchInOtherFields = Object.values(item).some(value =>
                         value && value.toString().toLowerCase().includes(searchTerm)
                     );
+
+                    return searchInTerms || searchInOtherFields;
+                })();
 
                 const matchesArea = !areaFilter ||
                     (item.エリア && item.エリア === areaFilter);
@@ -988,11 +1405,19 @@
                 return matchesSearch && matchesArea && matchesStatus;
             });
 
-            // Reset pagination to first page when filtering
-            paginationState[currentTab].currentPage = 1;
-
-            updateStats();
-            renderCurrentView();
+            // Re-apply current sort if any
+            if (sortState.column) {
+                const currentColumn = sortState.column;
+                const currentDirection = sortState.direction;
+                sortState.column = null; // Reset to trigger sort
+                sortState.direction = currentDirection === 'asc' ? 'desc' : 'asc'; // Will be toggled back
+                sortData(currentColumn);
+            } else {
+                // Reset pagination to first page when filtering
+                paginationState[currentTab].currentPage = 1;
+                updateStats();
+                renderCurrentView();
+            }
         }
 
         // Toggle between list and grid view
@@ -1289,27 +1714,69 @@
             if (!thumbnailContainers.length) return;
 
             try {
-                const thumbnailUrl = await fetchThumbnailWithDelay(name, index * 50);
+                // Use optimized image system for main thumbnail
+                const mainContainer = gridItem.querySelector('.grid-main-thumbnail');
+                const smallContainer = gridItem.querySelector('.grid-thumbnail');
 
-                thumbnailContainers.forEach(container => {
-                    if (thumbnailUrl) {
-                        const img = document.createElement('img');
-                        img.src = thumbnailUrl;
-                        img.alt = `${name}の写真`;
-                        img.loading = 'lazy';
+                if (window.ImageOptimizer && mainContainer) {
+                    const mainImage = window.ImageOptimizer.createOptimizedImage(
+                        `https://ja.wikipedia.org/wiki/${encodeURIComponent(name)}`,
+                        {
+                            width: 280,
+                            height: 200,
+                            priority: 'medium',
+                            loading: 'lazy',
+                            alt: `${name}の写真`,
+                            className: 'grid-main-image image-optimized'
+                        }
+                    );
 
-                        img.onload = () => {
-                            container.innerHTML = '';
-                            container.appendChild(img);
-                        };
+                    const smallImage = window.ImageOptimizer.createOptimizedImage(
+                        `https://ja.wikipedia.org/wiki/${encodeURIComponent(name)}`,
+                        {
+                            width: 50,
+                            height: 50,
+                            priority: 'medium',
+                            loading: 'lazy',
+                            alt: `${name}の写真`,
+                            className: 'grid-small-image image-optimized'
+                        }
+                    );
 
-                        img.onerror = () => {
-                            container.innerHTML = '<div class="thumbnail-error">📷</div>';
-                        };
-                    } else {
-                        container.innerHTML = '<div class="thumbnail-error">📷</div>';
+                    if (mainImage) {
+                        mainContainer.innerHTML = '';
+                        mainContainer.appendChild(mainImage);
                     }
-                });
+
+                    if (smallImage && smallContainer) {
+                        smallContainer.innerHTML = '';
+                        smallContainer.appendChild(smallImage);
+                    }
+                } else {
+                    // Fallback to original method
+                    const thumbnailUrl = await fetchThumbnailWithDelay(name, index * 50);
+
+                    thumbnailContainers.forEach(container => {
+                        if (thumbnailUrl) {
+                            const img = document.createElement('img');
+                            img.src = thumbnailUrl;
+                            img.alt = `${name}の写真`;
+                            img.loading = 'lazy';
+                            img.className = 'image-optimized';
+
+                            img.onload = () => {
+                                container.innerHTML = '';
+                                container.appendChild(img);
+                            };
+
+                            img.onerror = () => {
+                                container.innerHTML = '<div class="thumbnail-error">📷</div>';
+                            };
+                        } else {
+                            container.innerHTML = '<div class="thumbnail-error">📷</div>';
+                        }
+                    });
+                }
             } catch (error) {
                 console.warn(`Failed to load thumbnail for ${name}:`, error);
                 thumbnailContainers.forEach(container => {
@@ -1419,25 +1886,44 @@
             if (!thumbnailContainer) return;
 
             try {
-                const thumbnailUrl = await fetchThumbnailWithDelay(name, index * 50);
+                // Use optimized image system
+                const optimizedImage = window.ImageOptimizer?.createOptimizedImage(
+                    `https://ja.wikipedia.org/wiki/${encodeURIComponent(name)}`,
+                    {
+                        width: 60,
+                        height: 60,
+                        priority: 'medium',
+                        loading: 'lazy',
+                        alt: `${name}の写真`,
+                        className: 'politician-thumbnail image-optimized'
+                    }
+                );
 
-                if (thumbnailUrl) {
-                    const img = document.createElement('img');
-                    img.src = thumbnailUrl;
-                    img.alt = `${name}の写真`;
-                    img.className = 'politician-thumbnail';
-                    img.loading = 'lazy';
-
-                    img.onload = () => {
-                        thumbnailContainer.innerHTML = '';
-                        thumbnailContainer.appendChild(img);
-                    };
-
-                    img.onerror = () => {
-                        thumbnailContainer.innerHTML = '<div class="thumbnail-error">📷</div>';
-                    };
+                if (optimizedImage) {
+                    thumbnailContainer.innerHTML = '';
+                    thumbnailContainer.appendChild(optimizedImage);
                 } else {
-                    thumbnailContainer.innerHTML = '<div class="thumbnail-error">📷</div>';
+                    // Fallback to original method
+                    const thumbnailUrl = await fetchThumbnailWithDelay(name, index * 50);
+
+                    if (thumbnailUrl) {
+                        const img = document.createElement('img');
+                        img.src = thumbnailUrl;
+                        img.alt = `${name}の写真`;
+                        img.className = 'politician-thumbnail image-optimized';
+                        img.loading = 'lazy';
+
+                        img.onload = () => {
+                            thumbnailContainer.innerHTML = '';
+                            thumbnailContainer.appendChild(img);
+                        };
+
+                        img.onerror = () => {
+                            thumbnailContainer.innerHTML = '<div class="thumbnail-error">📷</div>';
+                        };
+                    } else {
+                        thumbnailContainer.innerHTML = '<div class="thumbnail-error">📷</div>';
+                    }
                 }
             } catch (error) {
                 console.warn(`Failed to load thumbnail for ${name}:`, error);
@@ -1492,6 +1978,10 @@
             showLoading();
             currentTab = tabName;
 
+            // Reset sorting when switching tabs
+            sortState.column = null;
+            sortState.direction = 'asc';
+
             // Update tab buttons
             document.querySelectorAll('.tab-button').forEach(btn => {
                 btn.classList.remove('active');
@@ -1511,6 +2001,7 @@
             filteredData = [...currentData];
 
             updateFilterOptions();
+            updateSortButtons();
             updateStats();
             renderCurrentView();
             hideLoading();
@@ -1531,8 +2022,115 @@
             hideLoading();
         }
 
+        // Warning Dialog Functions
+        function checkFirstVisit() {
+            const warningAccepted = sessionStorage.getItem('warningAccepted');
+            return !warningAccepted;
+        }
+
+        function showWarningDialog() {
+            const warningDialog = document.getElementById('warning-dialog');
+            if (warningDialog) {
+                warningDialog.style.display = 'flex';
+
+                // Prevent scrolling of background content
+                document.body.style.overflow = 'hidden';
+
+                // Focus management for accessibility
+                const continueBtn = document.getElementById('warning-continue');
+                if (continueBtn) {
+                    continueBtn.focus();
+                }
+            }
+        }
+
+        function hideWarningDialog() {
+            const warningDialog = document.getElementById('warning-dialog');
+            if (warningDialog) {
+                warningDialog.style.display = 'none';
+
+                // Restore scrolling
+                document.body.style.overflow = '';
+
+                // Mark as accepted for this session
+                sessionStorage.setItem('warningAccepted', 'true');
+            }
+        }
+
+        function initWarningDialog() {
+            const continueBtn = document.getElementById('warning-continue');
+            const normalModeBtn = document.getElementById('warning-normal-mode');
+            const warningDialog = document.getElementById('warning-dialog');
+
+            if (continueBtn) {
+                continueBtn.addEventListener('click', () => {
+                    hideWarningDialog();
+                    // Continue with dark theme (current theme)
+                });
+            }
+
+            if (normalModeBtn) {
+                normalModeBtn.addEventListener('click', () => {
+                    hideWarningDialog();
+                    // Switch to light theme
+                    if (currentTheme === 'dark') {
+                        toggleTheme();
+                    }
+                });
+            }
+
+            // Close dialog with Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && warningDialog && warningDialog.style.display === 'flex') {
+                    e.preventDefault();
+                    hideWarningDialog();
+                }
+            });
+
+            // Prevent clicking outside to close (modal behavior)
+            if (warningDialog) {
+                warningDialog.addEventListener('click', (e) => {
+                    // Only close if clicking on the overlay, not the dialog content
+                    if (e.target === warningDialog) {
+                        hideWarningDialog();
+                    }
+                });
+            }
+
+            // Tab trap for accessibility
+            if (warningDialog) {
+                warningDialog.addEventListener('keydown', (e) => {
+                    if (e.key === 'Tab') {
+                        const focusableElements = warningDialog.querySelectorAll('button');
+                        const firstElement = focusableElements[0];
+                        const lastElement = focusableElements[focusableElements.length - 1];
+
+                        if (e.shiftKey) {
+                            if (document.activeElement === firstElement) {
+                                e.preventDefault();
+                                lastElement.focus();
+                            }
+                        } else {
+                            if (document.activeElement === lastElement) {
+                                e.preventDefault();
+                                firstElement.focus();
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
         // Initialize the application
         async function init() {
+            // Initialize warning dialog first
+            initWarningDialog();
+
+            // Check if this is a first visit and show warning dialog if needed
+            if (checkFirstVisit()) {
+                showWarningDialog();
+            }
+
             // Initialize theme first (before other UI elements)
             initTheme();
 
@@ -1967,19 +2565,19 @@
 
         /* Dark Mode Variables */
         [data-theme="dark"] {
-            --primary-color: #3b82f6;
-            --primary-hover: #2563eb;
+            --primary-color: #dc2626;
+            --primary-hover: #b91c1c;
             --danger-color: #ef4444;
             --warning-color: #f59e0b;
             --success-color: #10b981;
-            --background-color: #040000;
-            --surface-color: #1e293b;
-            --text-primary: #f87171;
-            --text-secondary: #94a3b8;
-            --border-color: #334155;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+            --background-color: #0f0a0a;
+            --surface-color: #1a0f0f;
+            --text-primary: #fecaca;
+            --text-secondary: #fca5a5;
+            --border-color: #450a0a;
+            --shadow-sm: 0 1px 2px 0 rgb(139 0 0 / 0.3);
+            --shadow-md: 0 4px 6px -1px rgb(139 0 0 / 0.3), 0 2px 4px -2px rgb(139 0 0 / 0.3);
+            --shadow-lg: 0 10px 15px -3px rgb(139 0 0 / 0.4), 0 4px 6px -4px rgb(139 0 0 / 0.4);
         }
 
         /* Theme Toggle Styles */
@@ -2022,7 +2620,7 @@
         }
 
         [data-theme="dark"] .theme-toggle-track {
-            background: linear-gradient(135deg, #1e40af, #3730a3);
+            background: linear-gradient(135deg, #7f1d1d, #991b1b);
         }
 
         .theme-toggle-thumb {
@@ -2043,8 +2641,8 @@
 
         [data-theme="dark"] .theme-toggle-thumb {
             transform: translateX(28px);
-            background: #fbbf24;
-            border-color: #f59e0b;
+            background: #f87171;
+            border-color: #dc2626;
         }
 
         .sun-icon {
@@ -2070,7 +2668,7 @@
         [data-theme="dark"] .moon-icon {
             opacity: 1;
             transform: scale(1) rotate(0deg);
-            color: #1e293b;
+            color: #450a0a;
         }
 
         /* Ensure smooth theme transitions */
@@ -2082,20 +2680,20 @@
 
         /* Dark mode specific adjustments */
         [data-theme="dark"] .trending-slider-container {
-            background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%);
+            background: linear-gradient(135deg, #1a0f0f 0%, #450a0a 100%);
         }
 
         [data-theme="dark"] .slider-card {
-            background: rgba(30, 41, 59, 0.95);
-            border: 1px solid rgba(148, 163, 184, 0.3);
+            background: rgba(26, 15, 15, 0.95);
+            border: 1px solid rgba(252, 165, 165, 0.3);
         }
 
         [data-theme="dark"] .slider-politician-image {
-            background: linear-gradient(135deg, #334155 0%, #475569 100%);
+            background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%);
         }
 
         [data-theme="dark"] .grid-image-section {
-            background: linear-gradient(135deg, #334155 0%, #475569 100%);
+            background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%);
         }
 
         [data-theme="dark"] .pagination-container {
@@ -2103,67 +2701,67 @@
         }
 
         [data-theme="dark"] th {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            background: linear-gradient(135deg, #1a0f0f 0%, #450a0a 100%);
         }
 
         [data-theme="dark"] .data-row:nth-child(even) {
-            background-color: rgba(51, 65, 85, 0.3);
+            background-color: rgba(69, 10, 10, 0.3);
         }
 
         [data-theme="dark"] .data-row:hover {
-            background-color: rgba(51, 65, 85, 0.5);
+            background-color: rgba(69, 10, 10, 0.5);
         }
 
         [data-theme="dark"] .data-row:nth-child(even):hover {
-            background-color: rgba(51, 65, 85, 0.6);
+            background-color: rgba(69, 10, 10, 0.6);
         }
 
         [data-theme="dark"] .thumbnail-container,
         [data-theme="dark"] .grid-thumbnail {
-            background-color: #334155;
+            background-color: #450a0a;
         }
 
         [data-theme="dark"] .slider-area-tag {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
         }
 
         [data-theme="dark"] .grid-area-tag {
-            background-color: #1e40af;
-            color: #bfdbfe;
+            background-color: #7f1d1d;
+            color: #fecaca;
         }
 
         [data-theme="dark"] .area-tag {
-            background-color: #1e40af;
-            color: #bfdbfe;
+            background-color: #7f1d1d;
+            color: #fecaca;
         }
 
         [data-theme="dark"] .status-公認,
         [data-theme="dark"] .grid-status-公認 {
-            background-color: #166534;
-            color: #bbf7d0;
+            background-color: #064e3b;
+            color: #a7f3d0;
         }
 
         [data-theme="dark"] .status-非公認,
         [data-theme="dark"] .grid-status-非公認 {
-            background-color: #991b1b;
+            background-color: #450a0a;
             color: #fecaca;
         }
 
         [data-theme="dark"] .status-無所属,
         [data-theme="dark"] .grid-status-無所属 {
-            background-color: #374151;
-            color: #d1d5db;
+            background-color: #1c1917;
+            color: #d6d3d1;
         }
 
         [data-theme="dark"] .category-badge,
         [data-theme="dark"] .grid-category-badge {
-            background-color: #92400e;
-            color: #fde68a;
+            background-color: #7c2d12;
+            color: #fed7aa;
         }
 
         [data-theme="dark"] .error-message {
-            background-color: #7f1d1d;
-            border-color: #991b1b;
+            background-color: #450a0a;
+            border-color: #7f1d1d;
             color: #fecaca;
         }
 
@@ -2182,19 +2780,33 @@
         }
 
         [data-theme="dark"] .slider-loading {
-            color: rgba(241, 245, 249, 0.8);
+            color: rgba(254, 202, 202, 0.8);
+        }
+
+        [data-theme="dark"] .sort-btn:hover {
+            background-color: rgba(220, 38, 38, 0.1);
+            color: var(--primary-color);
+        }
+
+        [data-theme="dark"] .sort-btn.active {
+            color: var(--primary-color);
+            background-color: rgba(220, 38, 38, 0.1);
+        }
+
+        [data-theme="dark"] .sort-btn:focus {
+            box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.3);
         }
 
         [data-theme="dark"] .view-btn:hover {
-            background-color: #334155;
+            background-color: #450a0a;
         }
 
         [data-theme="dark"] .tab-button:hover {
-            background-color: #334155;
+            background-color: #450a0a;
         }
 
         [data-theme="dark"] #clear-search:hover {
-            background-color: #334155;
+            background-color: #450a0a;
         }
 
         [data-theme="dark"] .page-number:hover {
@@ -2210,39 +2822,39 @@
         /* Focus indicators for dark mode */
         [data-theme="dark"] .theme-toggle:focus {
             outline: none;
-            box-shadow: 0 0 0 3px rgb(59 130 246 / 0.3);
+            box-shadow: 0 0 0 3px rgb(220 38 38 / 0.3);
         }
 
         [data-theme="dark"] #search-input:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgb(59 130 246 / 0.2);
+            box-shadow: 0 0 0 3px rgb(220 38 38 / 0.2);
         }
 
         [data-theme="dark"] .filter-container select:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgb(59 130 246 / 0.2);
+            box-shadow: 0 0 0 2px rgb(220 38 38 / 0.2);
         }
 
         /* Ensure proper contrast for text in dark mode */
         [data-theme="dark"] .wiki-link {
-            color: #60a5fa;
+            color: #f87171;
         }
 
         [data-theme="dark"] .wiki-link:hover {
-            color: #93c5fd;
+            color: #fecaca;
         }
 
         [data-theme="dark"] .grid-wiki-link {
-            color: #60a5fa;
+            color: #f87171;
         }
 
         [data-theme="dark"] .grid-wiki-link:hover {
-            color: #93c5fd;
+            color: #fecaca;
         }
 
         /* Better visibility for input placeholders in dark mode */
         [data-theme="dark"] #search-input::placeholder {
-            color: #64748b;
+            color: #7f1d1d;
             opacity: 1;
         }
 
@@ -2316,6 +2928,7 @@
         }
 
         body {
+            padding-top: 60px;
             font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--background-color);
             color: var(--text-primary);
@@ -2331,15 +2944,55 @@
 
         header {
             text-align: center;
+            margin-top: 10px;
             margin-bottom: 30px;
-            padding: 20px 0;
+            padding: 0;
+            border: 0;
+            font: inherit;
+            box-sizing: border-box;
+            display: flex;
+            align-content: stretch;
+            overflow: visible;
+            flex-direction: row;
+            flex-wrap: wrap;
+            background-color: var(--);
+            width: initial;
+            min-width: 0px;
+            min-height: 0px;
+            left: 10%;
+            right: auto;
+            top: 0px;
+            bottom: unset;
+            height: 100px;
+            max-height: calc(100% + 0px);
+            margin-right: auto;
+            margin-left: auto;
+            position: fixed;
+            overflow: hidden;
+            z-index: 1050;
         }
 
         header h1 {
-            font-size: 2.5rem;
+            padding: 5px 10px;
+            line-height: 60px;
+            font-size: 1.6rem;
             font-weight: 700;
+            vertical-align: baseline;
             color: var(--text-primary);
-            margin-bottom: 8px;
+        }
+
+        p.subtitle {
+            padding: 5px 10px;
+            line-height: 60px;
+            vertical-align: baseline;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        /* Dark mode header styling */
+        [data-theme="dark"] header h1 {
+            color: #f87171;
+            text-shadow: 0 0 20px rgba(248, 113, 113, 0.3);
         }
 
         /* Trending Politicians Slider */
@@ -2347,7 +3000,7 @@
             margin-bottom: 40px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: var(--border-radius);
-            padding: 24px;
+            padding: 40px 24px;
             box-shadow: var(--shadow-lg);
             position: relative;
             overflow: hidden;
@@ -2366,22 +3019,22 @@
 
         .trending-header {
             text-align: center;
-            margin-bottom: 24px;
+            margin-bottom: 32px;
             position: relative;
             z-index: 1;
         }
 
         .trending-header h2 {
-            font-size: 1.8rem;
+            font-size: 2.2rem;
             font-weight: 700;
             color: white;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .trending-header p {
             color: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
+            font-size: 1.2rem;
             font-weight: 500;
         }
 
@@ -2408,7 +3061,7 @@
 
         .slider-item {
             flex: 0 0 50%;
-            padding: 16px;
+            padding: 20px;
             box-sizing: border-box;
             position: relative;
         }
@@ -2416,8 +3069,8 @@
         .slider-card {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 12px;
-            padding: 20px;
-            height: 280px;
+            padding: 24px;
+            height: 450px;
             display: flex;
             flex-direction: column;
             position: relative;
@@ -2452,11 +3105,10 @@
 
         .slider-image-section {
             position: relative;
-            height: 120px;
-            margin-bottom: 16px;
+            height: 240px;
+            margin-bottom: 20px;
             border-radius: 8px;
             overflow: hidden;
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
         }
 
         .slider-politician-image {
@@ -2472,9 +3124,10 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-            max-height: 120px;
-            transition: transform 0.3s ease;
+            max-height: 240px;
+            transition: transform 1s ease;
             filter: brightness(1.1) contrast(1.1);
+            background: black;
         }
 
         .slider-card:hover .slider-politician-image img {
@@ -2581,7 +3234,8 @@
             top: 50%;
             transform: translateY(-50%);
             z-index: 10;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
             border: none;
             width: 48px;
             height: 48px;
@@ -2591,15 +3245,16 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            color: var(--text-primary);
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
+            opacity: 0.5;
         }
 
         .slider-arrow:hover {
-            background: white;
+            background: rgba(0, 0, 0, 0.8);
             transform: translateY(-50%) scale(1.1);
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            opacity: 0.8;
         }
 
         .slider-arrow:active {
@@ -2681,8 +3336,8 @@
         /* Responsive Design for Slider */
         @media (max-width: 768px) {
             .trending-slider-container {
-                margin-bottom: 24px;
-                padding: 16px;
+                margin-bottom: 32px;
+                padding: 24px 16px;
             }
 
             .trending-header h2 {
@@ -2699,13 +3354,13 @@
             }
 
             .slider-card {
-                height: 240px;
-                padding: 16px;
+                height: 380px;
+                padding: 20px;
             }
 
             .slider-image-section {
-                height: 80px;
-                margin-bottom: 12px;
+                height: 160px;
+                margin-bottom: 16px;
             }
 
             .slider-name {
@@ -2736,12 +3391,12 @@
 
         @media (max-width: 480px) {
             .slider-card {
-                height: 220px;
-                padding: 12px;
+                height: 340px;
+                padding: 16px;
             }
 
             .slider-image-section {
-                height: 70px;
+                height: 140px;
             }
 
             .slider-name {
@@ -2809,10 +3464,24 @@
             font-size: 1.2rem;
         }
 
+        /* Controls Container */
+        .controls-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .search-filter-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
         /* Search and Filters */
         .search-container {
             position: relative;
-            margin-bottom: 16px;
         }
 
         #search-input {
@@ -2854,12 +3523,12 @@
         .filter-container {
             display: flex;
             gap: 12px;
-            margin-bottom: 20px;
         }
 
         .filter-container select {
             flex: 1;
             padding: 10px 12px;
+            color: var(--text-primary);
             border: 2px solid var(--border-color);
             border-radius: var(--border-radius);
             background-color: var(--surface-color);
@@ -2872,41 +3541,10 @@
             border-color: var(--primary-color);
         }
 
-        /* Statistics */
-        .stats-container {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .stat-card {
-            flex: 1;
-            background-color: var(--surface-color);
-            padding: 16px;
-            border-radius: var(--border-radius);
-            text-align: center;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-color);
-        }
-
-        .stat-number {
-            display: block;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 4px;
-        }
-
-        .stat-label {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
         /* View Toggle Controls */
         .view-controls {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 16px;
             position: relative;
             z-index: 20;
         }
@@ -2966,6 +3604,95 @@
 
         .view-btn:hover::before {
             left: 100%;
+        }
+
+        /* Table Header Styles */
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            gap: 8px;
+        }
+
+        .header-content span {
+            flex: 1;
+            text-align: left;
+        }
+
+        .sort-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            opacity: 0.7;
+        }
+
+        .sort-btn:hover {
+            background-color: rgba(37, 99, 235, 0.1);
+            color: var(--primary-color);
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .sort-btn.active {
+            color: var(--primary-color);
+            background-color: rgba(37, 99, 235, 0.1);
+            opacity: 1;
+        }
+
+        .sort-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+        }
+
+        .sort-icon {
+            transition: var(--transition);
+        }
+
+        .sort-btn.asc .sort-icon {
+            transform: rotate(180deg);
+        }
+
+        .sort-btn.desc .sort-icon {
+            transform: rotate(0deg);
+        }
+
+        /* Statistics */
+        .stats-container {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background-color: var(--surface-color);
+            padding: 16px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
         }
 
         /* Tab Content */
@@ -3057,6 +3784,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            background: black;
         }
 
         .grid-main-thumbnail img {
@@ -3569,6 +4297,21 @@
                 font-size: 2rem;
             }
 
+            /* Controls Container Mobile */
+            .controls-container {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+
+            .search-filter-section {
+                gap: 12px;
+            }
+
+            .view-controls {
+                justify-content: center;
+            }
+
             .tab-button {
                 padding: 10px 12px;
                 font-size: 0.9rem;
@@ -3595,6 +4338,25 @@
             .view-btn {
                 width: 40px;
                 height: 40px;
+            }
+
+            /* Header Content Mobile */
+            .header-content {
+                gap: 4px;
+            }
+
+            .header-content span {
+                font-size: 0.85rem;
+            }
+
+            .sort-btn {
+                width: 20px;
+                height: 20px;
+            }
+
+            .sort-icon {
+                width: 12px;
+                height: 12px;
             }
 
             /* Grid Mobile */
@@ -3715,14 +4477,38 @@
                 margin-bottom: 16px;
             }
 
+            /* Controls Container Small Mobile */
+            .controls-container {
+                gap: 12px;
+            }
+
+            .search-filter-section {
+                gap: 10px;
+            }
+
             /* View Toggle Small Mobile */
             .view-controls {
-                margin-bottom: 12px;
+                margin-top: 8px;
             }
 
             .view-btn {
                 width: 36px;
                 height: 36px;
+            }
+
+            /* Header Content Small Mobile */
+            .header-content span {
+                font-size: 0.8rem;
+            }
+
+            .sort-btn {
+                width: 18px;
+                height: 18px;
+            }
+
+            .sort-icon {
+                width: 10px;
+                height: 10px;
             }
 
             /* Grid Small Mobile */
@@ -3882,8 +4668,103 @@
             overflow: hidden;
         }
 
-        .clickable-row::before,
-        .clickable-item::before {
+        .warning-dialog::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #dc2626, #ef4444, #f87171);
+            background-size: 300% 100%;
+            animation: gradientPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes gradientPulse {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .warning-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .warning-icon {
+            font-size: 2rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .warning-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #dc2626;
+            text-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+            letter-spacing: 2px;
+            margin: 0;
+        }
+
+        .warning-content {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .warning-message {
+            color: #fecaca;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .warning-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .warning-btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 200px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .warning-btn::before {
             content: '';
             position: absolute;
             top: 0;
@@ -3949,7 +4830,7 @@
             max-width: 1200px;
             height: 90vh;
             max-height: 800px;
-            background: var(--card-bg);
+            background: var(--surface-color);
             border-radius: 24px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
             transform: scale(0.9) translateY(50px);
@@ -3990,12 +4871,15 @@
         .modal-content {
             display: flex;
             height: 100%;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            background: var(--surface-color);
         }
 
         .modal-image-section {
             flex: 1;
             position: relative;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: black;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -4041,14 +4925,14 @@
         .modal-header {
             padding: 30px 30px 20px;
             border-bottom: 1px solid var(--border-color);
-            background: var(--card-bg);
+            background: var(--surface-color);
         }
 
         .modal-header h2 {
             margin: 0 0 10px;
             font-size: 2rem;
             font-weight: 700;
-            color: var(--text-color);
+            color: var(---text-primary);
         }
 
         .modal-details {
@@ -4086,7 +4970,7 @@
 
         .modal-tab.active {
             color: var(--accent-color);
-            background: var(--card-bg);
+            background: var(--surface-color);
         }
 
         .modal-tab::after {
@@ -4156,7 +5040,7 @@
             flex: 1;
             text-align: right;
             font-weight: 500;
-            color: var(--text-color);
+            color: var(---text-primary);
         }
 
         /* Comments Section */
@@ -4164,6 +5048,10 @@
             padding: 30px;
             height: 100%;
             overflow-y: auto;
+        }
+
+        .comments-section::-webkit-scrollbar {
+            display: none;
         }
 
         .comment-form {
@@ -4176,7 +5064,7 @@
 
         .comment-form h3 {
             margin: 0 0 20px;
-            color: var(--text-color);
+            color: var(---text-primary);
             font-size: 1.2rem;
         }
 
@@ -4189,7 +5077,7 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
-            color: var(--text-color);
+            color: var(---text-primary);
         }
 
         .form-group input,
@@ -4198,8 +5086,8 @@
             padding: 12px 16px;
             border: 2px solid var(--border-color);
             border-radius: 12px;
-            background: var(--card-bg);
-            color: var(--text-color);
+            background: var(--surface-color);
+            color: var(---text-primary);
             font-family: inherit;
             font-size: 14px;
             transition: all 0.2s ease;
@@ -4263,7 +5151,7 @@
 
         .reset-btn {
             background: var(--secondary-bg);
-            color: var(--text-color);
+            color: var(---text-primary);
             border: 1px solid var(--border-color);
         }
 
@@ -4274,7 +5162,7 @@
 
         .comments-list h3 {
             margin: 0 0 20px;
-            color: var(--text-color);
+            color: var(---text-primary);
             font-size: 1.2rem;
         }
 
@@ -4284,7 +5172,7 @@
         }
 
         .comment-item {
-            background: var(--card-bg);
+            background: var(--surface-color);
             padding: 20px;
             border-radius: 12px;
             margin-bottom: 15px;
@@ -4315,7 +5203,7 @@
         }
 
         .comment-text {
-            color: var(--text-color);
+            color: var(---text-primary);
             line-height: 1.6;
             white-space: pre-wrap;
         }
@@ -4363,7 +5251,7 @@
             top: 0;
             width: 50px;
             height: 50px;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.5);
             color: white;
             border: none;
             border-radius: 50%;
@@ -4375,11 +5263,13 @@
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(10px);
+            opacity: 0.5;
         }
 
         .modal-nav-btn:hover {
             background: rgba(0, 0, 0, 0.8);
             transform: scale(1.1);
+            opacity: 0.8;
         }
 
         .modal-nav-btn.prev {
@@ -4397,7 +5287,7 @@
 
         /* Dark mode adjustments for modal */
         [data-theme="dark"] .modal-container {
-            background: var(--card-bg);
+            background: var(--surface-color);
             border-color: var(--border-color);
         }
 

@@ -1,0 +1,152 @@
+/* Name display styles with furigana and English */
+
+/* Ruby (Furigana) styles */
+.name-furigana,
+.grid-name-furigana,
+.slider-name-furigana {
+    font-size: 0.7em;
+    color: #888;
+    display: block;
+    text-align: center;
+    margin-bottom: 2px;
+    line-height: 1.2;
+}
+
+/* Main name container */
+.name-main,
+.grid-name-main,
+.slider-name-main {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+/* English name styles */
+.name-english,
+.grid-name-english,
+.slider-name-english {
+    font-size: 0.75em;
+    color: #666;
+    font-style: italic;
+    font-weight: normal;
+    margin-top: 2px;
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .name-furigana,
+[data-theme="dark"] .grid-name-furigana,
+[data-theme="dark"] .slider-name-furigana {
+    color: #aaa;
+}
+
+[data-theme="dark"] .name-english,
+[data-theme="dark"] .grid-name-english,
+[data-theme="dark"] .slider-name-english {
+    color: #999;
+}
+
+/* Table-specific styles */
+.name-cell .name-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+}
+
+.name-cell .wiki-link {
+    align-self: flex-start;
+    margin-top: 4px;
+}
+
+/* Grid-specific styles */
+.grid-name-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    min-height: 60px;
+}
+
+.grid-name-section {
+    margin-bottom: 8px;
+}
+
+/* Slider-specific styles */
+.slider-name-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.slider-name-furigana {
+    color: #999;
+    text-align: center;
+}
+
+.slider-name-main {
+    align-items: center;
+}
+
+.slider-name-english {
+    font-size: 0.7em;
+    color: #777;
+    text-align: center;
+}
+
+/* Dark theme slider adjustments */
+[data-theme="dark"] .slider-name-furigana {
+    color: #bbb;
+}
+
+[data-theme="dark"] .slider-name-english {
+    color: #aaa;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .name-furigana,
+    .grid-name-furigana,
+    .slider-name-furigana {
+        font-size: 0.65em;
+    }
+
+    .name-english,
+    .grid-name-english,
+    .slider-name-english {
+        font-size: 0.7em;
+    }
+
+    .grid-name-info {
+        min-height: 50px;
+    }
+
+    .slider-name-english {
+        font-size: 0.65em;
+    }
+}
+
+/* Ensure proper spacing in name container */
+.name-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.grid-name-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+/* Better alignment for thumbnails */
+.thumbnail-container {
+    flex-shrink: 0;
+}
+
+.grid-thumbnail {
+    flex-shrink: 0;
+}
