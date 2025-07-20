@@ -65,6 +65,9 @@
     <!-- Image Optimization Styles -->
     <link rel="stylesheet" href="/src/css/image-optimization.css">
 
+    <!-- Name Display Styles -->
+    <link rel="stylesheet" href="/src/css/name-display.css">
+
     <!-- Preload critical images -->
     <link rel="preload" as="image" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPC9zdmc+Cg==" />
 
@@ -513,6 +516,130 @@
             WIKIPEDIA_API_DELAY: 100
         };
 
+        // Name mapping for furigana and English romanization
+        const nameMapping = {
+            '石破茂': { furigana: 'いしば しげる', english: 'Ishiba Shigeru' },
+            '和田義明': { furigana: 'わだ よしあき', english: 'Wada Yoshiaki' },
+            '木村次郎': { furigana: 'きむら じろう', english: 'Kimura Jiro' },
+            '藤原崇': { furigana: 'ふじわら たかし', english: 'Fujiwara Takashi' },
+            '西村明宏': { furigana: 'にしむら あきひろ', english: 'Nishimura Akihiro' },
+            '亀岡偉民': { furigana: 'かめおか ひでたみ', english: 'Kameoka Hidetami' },
+            '上杉謙太郎': { furigana: 'うえすぎ けんたろう', english: 'Uesugi Kentaro' },
+            '梁和生': { furigana: 'りゃん かずお', english: 'Ryo Kazuo' },
+            '福田達夫': { furigana: 'ふくだ たつお', english: 'Fukuda Tatsuo' },
+            '中根ー幸': { furigana: 'なかね かずゆき', english: 'Nakane Kazuyuki' },
+            '柴山昌彦': { furigana: 'しばやま まさひこ', english: 'Shibayama Masahiko' },
+            '大塚拓': { furigana: 'おおつか たく', english: 'Otsuka Taku' },
+            '三ツ林裕巳': { furigana: 'みつばやし ひろみ', english: 'Mitsubayashi Hiromi' },
+            '松野博ー': { furigana: 'まつの ひろかず', english: 'Matsuno Hirokazu' },
+            '山田美樹': { furigana: 'やまだ みき', english: 'Yamada Miki' },
+            '丸川珠代': { furigana: 'まるかわ たまよ', english: 'Marukawa Tamayo' },
+            '下村博文': { furigana: 'しもむら はくぶん', english: 'Shimomura Hakubun' },
+            '平沢勝栄': { furigana: 'ひらさわ かつえい', english: 'Hirasawa Katsuei' },
+            '小田原潔': { furigana: 'おだわら きよし', english: 'Odawara Kiyoshi' },
+            '荻生田光一': { furigana: 'はぎうだ こういち', english: 'Hagiuda Koichi' },
+            '萩生田光一': { furigana: 'はぎうだ こういち', english: 'Hagiuda Koichi' },
+            '義家弘介': { furigana: 'よしいえ ひろゆき', english: 'Yoshiie Hiroyuki' },
+            '細田健一': { furigana: 'ほそだ けんいち', english: 'Hosoda Kenichi' },
+            '高鳥修一': { furigana: 'たかとり しゅういち', english: 'Takatori Shuichi' },
+            '田畑裕明': { furigana: 'たばた ひろあき', english: 'Tabata Hiroaki' },
+            '小森卓郎': { furigana: 'こもり たくろう', english: 'Komori Takuro' },
+            '佐々木紀': { furigana: 'ささき のり', english: 'Sasaki Nori' },
+            '稲田朋美': { furigana: 'いなだ ともみ', english: 'Inada Tomomi' },
+            '高木毅': { furigana: 'たかぎ つよし', english: 'Takagi Tsuyoshi' },
+            '若林健太': { furigana: 'わかばやし けんた', english: 'Wakabayashi Kenta' },
+            '宮下一郎': { furigana: 'みやした いちろう', english: 'Miyashita Ichiro' },
+            '宮沢博行': { furigana: 'みやざわ ひろゆき', english: 'Miyazawa Hiroyuki' },
+            '宮澤博行': { furigana: 'みやざわ ひろゆき', english: 'Miyazawa Hiroyuki' },
+            '鈴木淳司': { furigana: 'すずき じゅんじ', english: 'Suzuki Junji' },
+            '青山周平': { furigana: 'あおやま しゅうへい', english: 'Aoyama Shuhei' },
+            '根本幸典': { furigana: 'ねもと ゆきのり', english: 'Nemoto Yukinori' },
+            '鈴木英敬': { furigana: 'すずき えいけい', english: 'Suzuki Eikei' },
+            '中山泰秀': { furigana: 'なかやま やすひで', english: 'Nakayama Yasuhide' },
+            '加納陽之助': { furigana: 'かのう ようのすけ', english: 'Kano Yonosuke' },
+            '示清皇ー': { furigana: 'しめきよ こういち', english: 'Shimekiyo Koichi' },
+            '谷川とむ': { furigana: 'たにがわ とむ', english: 'Tanigawa Tom' },
+            '関芳弘': { furigana: 'せき よしひろ', english: 'Seki Yoshihiro' },
+            '西村康稔': { furigana: 'にしむら やすとし', english: 'Nishimura Yasutoshi' },
+            '世耕弘成': { furigana: 'せこう ひろしげ', english: 'Seko Hiroshige' },
+            '井原巧': { furigana: 'いはら たくみ', english: 'Ihara Takumi' },
+            '宮内秀樹': { furigana: 'みやうち ひでき', english: 'Miyauchi Hideki' },
+            '武田良太': { furigana: 'たけだ りょうた', english: 'Takeda Ryota' },
+            '加藤竜祥': { furigana: 'かとう りゅうしょう', english: 'Kato Ryusho' },
+            '衛藤征士郎': { furigana: 'えとう せいしろう', english: 'Eto Seishiro' },
+            '岸信夫': { furigana: 'きし のぶお', english: 'Kishi Nobuo' },
+            '熊田裕通': { furigana: 'くまだ ひろみち', english: 'Kumada Hiromichi' },
+            '斎藤洋明': { furigana: 'さいとう ひろあき', english: 'Saito Hiroaki' },
+            '坂井学': { furigana: 'さかい まなぶ', english: 'Sakai Manabu' },
+            '田野瀬田道': { furigana: 'たのせ たみち', english: 'Tanose Tamichi' },
+            '中川貴元': { furigana: 'なかがわ たかもと', english: 'Nakagawa Takamoto' },
+            '中村裕之': { furigana: 'なかむら ひろゆき', english: 'Nakamura Hiroyuki' },
+            '深澤陽一': { furigana: 'ふかざわ よういち', english: 'Fukazawa Yoichi' },
+            '星野剛士': { furigana: 'ほしの つよし', english: 'Hoshino Tsuyoshi' },
+            '北村経夫': { furigana: 'きたむら つねお', english: 'Kitamura Tsuneo' },
+            'こやり隆史': { furigana: 'こやり たかし', english: 'Koyari Takashi' },
+            '船橋利実': { furigana: 'ふなばし としみ', english: 'Funabashi Toshimi' },
+            '井上義行': { furigana: 'いのうえ よしゆき', english: 'Inoue Yoshiyuki' },
+            '赤澤亮正': { furigana: 'あかざわ りょうせい', english: 'Akazawa Ryosei' },
+            '甘利明': { furigana: 'あまり あきら', english: 'Amari Akira' },
+            '伊東良孝': { furigana: 'いとう よしたか', english: 'Ito Yoshitaka' },
+            '大岡敏孝': { furigana: 'おおおか としたか', english: 'Ooka Toshitaka' },
+            '木原稔': { furigana: 'きはら みのる', english: 'Kihara Minoru' },
+            '中谷真一': { furigana: 'なかたに しんいち', english: 'Nakatani Shinichi' },
+            '中山展宏': { furigana: 'なかやま のぶひろ', english: 'Nakayama Nobuhiro' },
+            '古川康': { furigana: 'ふるかわ やすし', english: 'Furukawa Yasushi' },
+            '務台俊介': { furigana: 'むたい しゅんすけ', english: 'Mutai Shunsuke' },
+            '山際大志郎': { furigana: 'やまぎわ だいしろう', english: 'Yamagiwa Daishiro' }
+        };
+
+        // Utility function to get name display information
+        function getNameInfo(name) {
+            const info = nameMapping[name];
+            return {
+                kanji: name,
+                furigana: info?.furigana || '',
+                english: info?.english || '',
+                searchTerms: [
+                    name,
+                    info?.furigana || '',
+                    info?.english || '',
+                    // Add variations like hiragana only version
+                    info?.furigana?.replace(/\s/g, '') || '',
+                    // Add katakana version if needed
+                    toKatakana(info?.furigana || ''),
+                    // Add mixed variations
+                    createMixedVariations(name, info?.furigana)
+                ].filter(Boolean).flat()
+            };
+        }
+
+        // Convert hiragana to katakana
+        function toKatakana(hiragana) {
+            return hiragana.replace(/[\u3041-\u3096]/g, function(match) {
+                const chr = match.charCodeAt(0) + 0x60;
+                return String.fromCharCode(chr);
+            });
+        }
+
+        // Create mixed kanji/hiragana variations
+        function createMixedVariations(kanji, furigana) {
+            if (!furigana) return [];
+
+            const variations = [];
+            const kanjiChars = kanji.split('');
+            const furiganaWords = furigana.split(' ');
+
+            // Create variations like "石破しげる" from "石破茂" and "いしば しげる"
+            if (kanjiChars.length >= 2 && furiganaWords.length >= 2) {
+                // First name in kanji, last name in hiragana
+                variations.push(kanjiChars[0] + kanjiChars[1] + furiganaWords[1]);
+                // First name in hiragana, last name in kanji
+                variations.push(furiganaWords[0] + kanjiChars.slice(2).join(''));
+            }
+
+            return variations;
+        }
+
         // State management
         let currentTab = 'uragane';
         let searchDebounceTimer = null;
@@ -769,7 +896,7 @@
                     trendingSlider.currentIndex += trendingSlider.itemsPerView;
                 }
                 updateSliderPosition();
-            }, 4000);
+            }, 12000);
         }
 
         function stopAutoPlay() {
@@ -898,6 +1025,8 @@
                 const sliderItem = document.createElement('div');
                 sliderItem.className = 'slider-item';
 
+                const nameInfo = getNameInfo(politician.名前);
+
                 sliderItem.innerHTML = `
                     <div class="slider-card" onclick="window.open('https://ja.wikipedia.org/wiki/${encodeURIComponent(politician.名前)}', '_blank')">
                         <div class="slider-rank-badge">${index + 1}</div>
@@ -907,7 +1036,13 @@
                             </div>
                         </div>
                         <div class="slider-content">
-                            <div class="slider-name">${politician.名前}</div>
+                            <div class="slider-name-section">
+                                ${nameInfo.furigana ? `<ruby class="slider-name-furigana">${nameInfo.furigana}</ruby>` : ''}
+                                <div class="slider-name-main">
+                                    <div class="slider-name">${politician.名前}</div>
+                                    ${nameInfo.english ? `<div class="slider-name-english">(${nameInfo.english})</div>` : ''}
+                                </div>
+                            </div>
                             <div class="slider-amount">${politician.裏金金額}</div>
                             <div class="slider-details">
                                 <div class="slider-detail-row">
@@ -1118,10 +1253,22 @@
             const statusFilter = document.getElementById('status-filter').value;
 
             filteredData = currentData.filter(item => {
-                const matchesSearch = searchTerm === '' ||
-                    Object.values(item).some(value =>
+                // Enhanced search functionality
+                const matchesSearch = searchTerm === '' || (() => {
+                    const nameInfo = getNameInfo(item.名前);
+
+                    // Check all search terms for this person
+                    const searchInTerms = nameInfo.searchTerms.some(term =>
+                        term.toLowerCase().includes(searchTerm)
+                    );
+
+                    // Also check other fields
+                    const searchInOtherFields = Object.values(item).some(value =>
                         value && value.toString().toLowerCase().includes(searchTerm)
                     );
+
+                    return searchInTerms || searchInOtherFields;
+                })();
 
                 const matchesArea = !areaFilter ||
                     (item.エリア && item.エリア === areaFilter);
@@ -1335,6 +1482,8 @@
             gridItem.className = 'grid-item';
             gridItem.style.animationDelay = `${Math.min(index * 30, 600)}ms`;
 
+            const nameInfo = getNameInfo(item.名前);
+
             if (currentTab === 'uragane') {
                 gridItem.innerHTML = `
                     <div class="grid-image-section">
@@ -1348,7 +1497,11 @@
                                 <div class="thumbnail-loading">📷</div>
                             </div>
                             <div class="grid-name-info">
-                                <div class="grid-name">${item.名前}</div>
+                                ${nameInfo.furigana ? `<ruby class="grid-name-furigana">${nameInfo.furigana}</ruby>` : ''}
+                                <div class="grid-name-main">
+                                    <div class="grid-name">${item.名前}</div>
+                                    ${nameInfo.english ? `<div class="grid-name-english">(${nameInfo.english})</div>` : ''}
+                                </div>
                                 <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="grid-wiki-link">
                                     📖 Wikipedia
                                 </a>
@@ -1395,7 +1548,11 @@
                                 <div class="thumbnail-loading">📷</div>
                             </div>
                             <div class="grid-name-info">
-                                <div class="grid-name">${item.名前}</div>
+                                ${nameInfo.furigana ? `<ruby class="grid-name-furigana">${nameInfo.furigana}</ruby>` : ''}
+                                <div class="grid-name-main">
+                                    <div class="grid-name">${item.名前}</div>
+                                    ${nameInfo.english ? `<div class="grid-name-english">(${nameInfo.english})</div>` : ''}
+                                </div>
                                 <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="grid-wiki-link">
                                     📖 Wikipedia
                                 </a>
@@ -1537,6 +1694,8 @@
             row.className = 'data-row';
             row.style.animationDelay = `${Math.min(index * 20, 500)}ms`;
 
+            const nameInfo = getNameInfo(item.名前);
+
             if (currentTab === 'uragane') {
                 row.innerHTML = `
                     <td class="name-cell">
@@ -1545,7 +1704,11 @@
                                 <div class="thumbnail-loading">📷</div>
                             </div>
                             <div class="name-info">
-                                <strong>${item.名前}</strong>
+                                ${nameInfo.furigana ? `<ruby class="name-furigana">${nameInfo.furigana}</ruby>` : ''}
+                                <div class="name-main">
+                                    <strong>${item.名前}</strong>
+                                    ${nameInfo.english ? `<span class="name-english">(${nameInfo.english})</span>` : ''}
+                                </div>
                                 <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="wiki-link">📖</a>
                             </div>
                         </div>
@@ -1564,7 +1727,11 @@
                                 <div class="thumbnail-loading">📷</div>
                             </div>
                             <div class="name-info">
-                                <strong>${item.名前}</strong>
+                                ${nameInfo.furigana ? `<ruby class="name-furigana">${nameInfo.furigana}</ruby>` : ''}
+                                <div class="name-main">
+                                    <strong>${item.名前}</strong>
+                                    ${nameInfo.english ? `<span class="name-english">(${nameInfo.english})</span>` : ''}
+                                </div>
                                 <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="wiki-link">📖</a>
                             </div>
                         </div>
@@ -2484,7 +2651,6 @@
             margin-bottom: 20px;
             border-radius: 8px;
             overflow: hidden;
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
         }
 
         .slider-politician-image {
@@ -2501,8 +2667,9 @@
             height: 100%;
             object-fit: contain;
             max-height: 240px;
-            transition: transform 0.3s ease;
+            transition: transform 1s ease;
             filter: brightness(1.1) contrast(1.1);
+            background: black;
         }
 
         .slider-card:hover .slider-politician-image img {
@@ -3157,6 +3324,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            background: black;
         }
 
         .grid-main-thumbnail img {
