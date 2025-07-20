@@ -61,6 +61,23 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Image Optimization Styles -->
+    <link rel="stylesheet" href="/src/css/image-optimization.css">
+
+    <!-- Preload critical images -->
+    <link rel="preload" as="image" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPC9zdmc+Cg==" />
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/src/sw.js').then(() => {
+                console.log('Service Worker registered');
+            }).catch(err => {
+                console.log('Service Worker registration failed', err);
+            });
+        }
+    </script>
 </head>
 <body>
     <!-- Warning Dialog -->
@@ -371,6 +388,12 @@
             <p>データの読み込みに失敗しました。しばらくしてから再試行してください。</p>
         </div>
     </div>
+
+    <!-- Image Optimization Scripts -->
+    <script src="/src/js/image-optimization-config.js"></script>
+    <script src="/src/js/image-optimization.js"></script>
+    <script src="/src/js/performance-monitor.js"></script>
+    <script src="/src/js/ab-testing.js"></script>
 
     <script>
         // Embedded data to avoid CORS issues
@@ -807,26 +830,47 @@
             }, 2000);
         }
 
+        // Load thumbnail for slider item
         async function loadSliderThumbnail(container, name, index) {
             try {
-                const thumbnailUrl = await fetchThumbnailWithDelay(name, index * 100);
+                // Use optimized image system
+                const optimizedImage = window.ImageOptimizer?.createOptimizedImage(
+                    `https://ja.wikipedia.org/api/rest_v1/page/media-list/${encodeURIComponent(name)}`,
+                    {
+                        width: 200,
+                        height: 240,
+                        priority: 'high',
+                        loading: 'eager',
+                        alt: `${name}の写真`,
+                        className: 'slider-politician-image'
+                    }
+                );
 
-                if (thumbnailUrl) {
-                    const img = document.createElement('img');
-                    img.src = thumbnailUrl;
-                    img.alt = `${name}の写真`;
-                    img.loading = 'lazy';
-
-                    img.onload = () => {
-                        container.innerHTML = '';
-                        container.appendChild(img);
-                    };
-
-                    img.onerror = () => {
-                        container.innerHTML = '<div class="thumbnail-error">📷</div>';
-                    };
+                if (optimizedImage) {
+                    container.innerHTML = '';
+                    container.appendChild(optimizedImage);
                 } else {
-                    container.innerHTML = '<div class="thumbnail-error">📷</div>';
+                    // Fallback to original method
+                    const thumbnailUrl = await fetchThumbnailWithDelay(name, index * 100);
+
+                    if (thumbnailUrl) {
+                        const img = document.createElement('img');
+                        img.src = thumbnailUrl;
+                        img.alt = `${name}の写真`;
+                        img.loading = 'eager';
+                        img.className = 'image-optimized priority-high';
+
+                        img.onload = () => {
+                            container.innerHTML = '';
+                            container.appendChild(img);
+                        };
+
+                        img.onerror = () => {
+                            container.innerHTML = '<div class="thumbnail-error">📷</div>';
+                        };
+                    } else {
+                        container.innerHTML = '<div class="thumbnail-error">📷</div>';
+                    }
                 }
             } catch (error) {
                 console.warn(`Failed to load slider thumbnail for ${name}:`, error);
@@ -1385,27 +1429,69 @@
             if (!thumbnailContainers.length) return;
 
             try {
-                const thumbnailUrl = await fetchThumbnailWithDelay(name, index * 50);
+                // Use optimized image system for main thumbnail
+                const mainContainer = gridItem.querySelector('.grid-main-thumbnail');
+                const smallContainer = gridItem.querySelector('.grid-thumbnail');
 
-                thumbnailContainers.forEach(container => {
-                    if (thumbnailUrl) {
-                        const img = document.createElement('img');
-                        img.src = thumbnailUrl;
-                        img.alt = `${name}の写真`;
-                        img.loading = 'lazy';
+                if (window.ImageOptimizer && mainContainer) {
+                    const mainImage = window.ImageOptimizer.createOptimizedImage(
+                        `https://ja.wikipedia.org/wiki/${encodeURIComponent(name)}`,
+                        {
+                            width: 280,
+                            height: 200,
+                            priority: 'medium',
+                            loading: 'lazy',
+                            alt: `${name}の写真`,
+                            className: 'grid-main-image image-optimized'
+                        }
+                    );
 
-                        img.onload = () => {
-                            container.innerHTML = '';
-                            container.appendChild(img);
-                        };
+                    const smallImage = window.ImageOptimizer.createOptimizedImage(
+                        `https://ja.wikipedia.org/wiki/${encodeURIComponent(name)}`,
+                        {
+                            width: 50,
+                            height: 50,
+                            priority: 'medium',
+                            loading: 'lazy',
+                            alt: `${name}の写真`,
+                            className: 'grid-small-image image-optimized'
+                        }
+                    );
 
-                        img.onerror = () => {
-                            container.innerHTML = '<div class="thumbnail-error">📷</div>';
-                        };
-                    } else {
-                        container.innerHTML = '<div class="thumbnail-error">📷</div>';
+                    if (mainImage) {
+                        mainContainer.innerHTML = '';
+                        mainContainer.appendChild(mainImage);
                     }
-                });
+
+                    if (smallImage && smallContainer) {
+                        smallContainer.innerHTML = '';
+                        smallContainer.appendChild(smallImage);
+                    }
+                } else {
+                    // Fallback to original method
+                    const thumbnailUrl = await fetchThumbnailWithDelay(name, index * 50);
+
+                    thumbnailContainers.forEach(container => {
+                        if (thumbnailUrl) {
+                            const img = document.createElement('img');
+                            img.src = thumbnailUrl;
+                            img.alt = `${name}の写真`;
+                            img.loading = 'lazy';
+                            img.className = 'image-optimized';
+
+                            img.onload = () => {
+                                container.innerHTML = '';
+                                container.appendChild(img);
+                            };
+
+                            img.onerror = () => {
+                                container.innerHTML = '<div class="thumbnail-error">📷</div>';
+                            };
+                        } else {
+                            container.innerHTML = '<div class="thumbnail-error">📷</div>';
+                        }
+                    });
+                }
             } catch (error) {
                 console.warn(`Failed to load thumbnail for ${name}:`, error);
                 thumbnailContainers.forEach(container => {
@@ -1502,25 +1588,44 @@
             if (!thumbnailContainer) return;
 
             try {
-                const thumbnailUrl = await fetchThumbnailWithDelay(name, index * 50);
+                // Use optimized image system
+                const optimizedImage = window.ImageOptimizer?.createOptimizedImage(
+                    `https://ja.wikipedia.org/wiki/${encodeURIComponent(name)}`,
+                    {
+                        width: 60,
+                        height: 60,
+                        priority: 'medium',
+                        loading: 'lazy',
+                        alt: `${name}の写真`,
+                        className: 'politician-thumbnail image-optimized'
+                    }
+                );
 
-                if (thumbnailUrl) {
-                    const img = document.createElement('img');
-                    img.src = thumbnailUrl;
-                    img.alt = `${name}の写真`;
-                    img.className = 'politician-thumbnail';
-                    img.loading = 'lazy';
-
-                    img.onload = () => {
-                        thumbnailContainer.innerHTML = '';
-                        thumbnailContainer.appendChild(img);
-                    };
-
-                    img.onerror = () => {
-                        thumbnailContainer.innerHTML = '<div class="thumbnail-error">📷</div>';
-                    };
+                if (optimizedImage) {
+                    thumbnailContainer.innerHTML = '';
+                    thumbnailContainer.appendChild(optimizedImage);
                 } else {
-                    thumbnailContainer.innerHTML = '<div class="thumbnail-error">📷</div>';
+                    // Fallback to original method
+                    const thumbnailUrl = await fetchThumbnailWithDelay(name, index * 50);
+
+                    if (thumbnailUrl) {
+                        const img = document.createElement('img');
+                        img.src = thumbnailUrl;
+                        img.alt = `${name}の写真`;
+                        img.className = 'politician-thumbnail image-optimized';
+                        img.loading = 'lazy';
+
+                        img.onload = () => {
+                            thumbnailContainer.innerHTML = '';
+                            thumbnailContainer.appendChild(img);
+                        };
+
+                        img.onerror = () => {
+                            thumbnailContainer.innerHTML = '<div class="thumbnail-error">📷</div>';
+                        };
+                    } else {
+                        thumbnailContainer.innerHTML = '<div class="thumbnail-error">📷</div>';
+                    }
                 }
             } catch (error) {
                 console.warn(`Failed to load thumbnail for ${name}:`, error);
@@ -2198,6 +2303,7 @@
         }
 
         body {
+            padding-top: 60px;
             font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--background-color);
             color: var(--text-primary);
@@ -2213,15 +2319,49 @@
 
         header {
             text-align: center;
+            margin-top: 10px;
             margin-bottom: 30px;
-            padding: 20px 0;
+            padding: 0;
+            border: 0;
+            font: inherit;
+            box-sizing: border-box;
+            display: flex;
+            align-content: stretch;
+            overflow: visible;
+            flex-direction: row;
+            flex-wrap: wrap;
+            background-color: var(--);
+            width: initial;
+            min-width: 0px;
+            min-height: 0px;
+            left: 10%;
+            right: auto;
+            top: 0px;
+            bottom: unset;
+            height: 100px;
+            max-height: calc(100% + 0px);
+            margin-right: auto;
+            margin-left: auto;
+            position: fixed;
+            overflow: hidden;
+            z-index: 1050;
         }
 
         header h1 {
-            font-size: 2.5rem;
+            padding: 5px 10px;
+            line-height: 60px;
+            font-size: 1.6rem;
             font-weight: 700;
+            vertical-align: baseline;
             color: var(--text-primary);
-            margin-bottom: 8px;
+        }
+
+        p.subtitle {
+            padding: 5px 10px;
+            line-height: 60px;
+            vertical-align: baseline;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
         }
 
         /* Dark mode header styling */
