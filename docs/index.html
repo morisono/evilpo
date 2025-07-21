@@ -1875,12 +1875,12 @@
                 row.innerHTML = `
                     <td class="name-cell">
                         <div class="name-container">
+                            <div class="name-info">
+                                <strong>${item.名前}
+                                <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="wiki-link" onclick="event.stopPropagation()">📖</a></strong>
+                            </div>
                             <div class="thumbnail-container" data-name="${item.名前}">
                                 <div class="thumbnail-loading">📷</div>
-                            </div>
-                            <div class="name-info">
-                                <strong>${item.名前}</strong>
-                                <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="wiki-link" onclick="event.stopPropagation()">📖</a>
                             </div>
                         </div>
                     </td>
@@ -1894,12 +1894,12 @@
                 row.innerHTML = `
                     <td class="name-cell">
                         <div class="name-container">
+                            <div class="name-info">
+                                <strong>${item.名前}
+                                <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="wiki-link" onclick="event.stopPropagation()">📖</a></strong>
+                            </div>
                             <div class="thumbnail-container" data-name="${item.名前}">
                                 <div class="thumbnail-loading">📷</div>
-                            </div>
-                            <div class="name-info">
-                                <strong>${item.名前}</strong>
-                                <a href="https://ja.wikipedia.org/wiki/${encodeURIComponent(item.名前)}" target="_blank" class="wiki-link" onclick="event.stopPropagation()">📖</a>
                             </div>
                         </div>
                     </td>
@@ -3895,6 +3895,8 @@
         /* Statistics */
         .stats-container {
             display: flex;
+            display: -webkit-flex;
+            flex-direction: row;
             gap: 16px;
             margin-bottom: 24px;
         }
@@ -3910,7 +3912,7 @@
         }
 
         .stat-number {
-            display: block;
+            display: f;
             font-size: 1.8rem;
             font-weight: 700;
             color: var(--primary-color);
@@ -4355,7 +4357,7 @@
         }
 
         .name-container {
-            display: flex;
+            display: grid;
             align-items: center;
             gap: 12px;
         }
@@ -4542,14 +4544,6 @@
 
             .tab-text {
                 display: none;
-            }
-
-            .filter-container {
-                flex-direction: column;
-            }
-
-            .stats-container {
-                flex-direction: column;
             }
 
             /* View Toggle Mobile */
