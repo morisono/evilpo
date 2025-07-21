@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 
     <!-- Primary Meta Tags -->
     <title>政治家データベース - 裏金・壺議員の詳細情報 | 政治腐敗追跡システム</title>
@@ -785,7 +785,7 @@
             });
         }
 
-        // Theme functionality
+        // Theme functionality - iOS Safari optimized
         function initTheme() {
             // Add transition class to body for smooth theme changes
             document.body.classList.add('theme-transition');
@@ -811,7 +811,16 @@
             // Set up theme toggle event listener
             const themeToggle = document.getElementById('theme-toggle');
             if (themeToggle) {
-                themeToggle.addEventListener('click', toggleTheme);
+                // iOS Safari optimized event handling
+                themeToggle.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    toggleTheme();
+                }, { passive: false });
+
+                themeToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    toggleTheme();
+                });
 
                 // Add keyboard support
                 themeToggle.addEventListener('keydown', (e) => {
@@ -832,34 +841,61 @@
             // Listen for system theme changes
             if (window.matchMedia) {
                 const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-                mediaQuery.addEventListener('change', (e) => {
-                    // Only auto-switch if user hasn't manually set a preference
-                    if (!localStorage.getItem('theme')) {
-                        const newTheme = e.matches ? 'dark' : 'light';
-                        if (newTheme !== currentTheme) {
-                            currentTheme = newTheme;
-                            document.documentElement.setAttribute('data-theme', currentTheme);
-                            updateThemeToggleLabel();
-                        }
-                    }
-                });
+
+                // Use addEventListener if available, otherwise addListener for older iOS
+                if (mediaQuery.addEventListener) {
+                    mediaQuery.addEventListener('change', handleSystemThemeChange);
+                } else if (mediaQuery.addListener) {
+                    mediaQuery.addListener(handleSystemThemeChange);
+                }
             }
-        }        function toggleTheme() {
+        }
+
+        function handleSystemThemeChange(e) {
+            // Only auto-switch if user hasn't manually set a preference
+            if (!localStorage.getItem('theme')) {
+                const newTheme = e.matches ? 'dark' : 'light';
+                if (newTheme !== currentTheme) {
+                    currentTheme = newTheme;
+                    document.documentElement.setAttribute('data-theme', currentTheme);
+                    updateThemeToggleLabel();
+                }
+            }
+        }
+
+        function toggleTheme() {
             currentTheme = currentTheme === 'light' ? 'dark' : 'light';
 
             // Apply theme with smooth transition
             document.documentElement.setAttribute('data-theme', currentTheme);
 
             // Save preference
-            localStorage.setItem('theme', currentTheme);
+            try {
+                localStorage.setItem('theme', currentTheme);
+            } catch (e) {
+                console.warn('Could not save theme preference:', e);
+            }
 
             // Update aria-label for accessibility
             updateThemeToggleLabel();
 
             // Dispatch custom event for other components
-            window.dispatchEvent(new CustomEvent('themeChanged', {
-                detail: { theme: currentTheme }
-            }));
+            try {
+                const event = new CustomEvent('themeChanged', {
+                    detail: { theme: currentTheme }
+                });
+                window.dispatchEvent(event);
+            } catch (e) {
+                // Fallback for older browsers
+                const event = document.createEvent('CustomEvent');
+                event.initCustomEvent('themeChanged', false, false, { theme: currentTheme });
+                window.dispatchEvent(event);
+            }
+
+            // Force a repaint to ensure iOS Safari updates properly
+            document.body.style.display = 'none';
+            document.body.offsetHeight; // Trigger reflow
+            document.body.style.display = '';
         }
 
         function updateThemeToggleLabel() {
@@ -2580,7 +2616,7 @@
             --shadow-lg: 0 10px 15px -3px rgb(139 0 0 / 0.4), 0 4px 6px -4px rgb(139 0 0 / 0.4);
         }
 
-        /* Theme Toggle Styles */
+        /* Theme Toggle Styles - iOS Safari Optimized */
         .theme-toggle {
             position: fixed;
             top: 20px;
@@ -2596,6 +2632,22 @@
             box-shadow: var(--shadow-lg);
             transition: var(--transition);
             backdrop-filter: blur(10px);
+
+            /* iOS Safari optimizations */
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+
+            /* Safe area support */
+            top: calc(20px + env(safe-area-inset-top, 0px));
+            right: calc(20px + env(safe-area-inset-right, 0px));
+
+            /* Ensure proper touch target size for iOS */
+            min-width: 44px;
+            min-height: 44px;
         }
 
         .theme-toggle:hover {
@@ -2671,8 +2723,14 @@
             color: #450a0a;
         }
 
-        /* Ensure smooth theme transitions */
+        /* Enhanced transitions with webkit prefixes for iOS Safari */
         * {
+            -webkit-transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                               border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                               color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            -moz-transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                            border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                            color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                        border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                        color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2858,19 +2916,29 @@
             opacity: 1;
         }
 
-        /* Smooth theme transition class */
+        /* Enhanced theme transition class with webkit prefixes for iOS Safari */
         .theme-transition {
+            -webkit-transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                               border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                               color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                               box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            -moz-transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                            border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                            color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                            box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
             transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                        border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                        color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                        box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
 
-        /* Responsive theme toggle */
+        /* Responsive theme toggle - iOS Safari Optimized */
         @media (max-width: 768px) {
             .theme-toggle {
-                top: 15px;
-                right: 15px;
+                top: calc(15px + env(safe-area-inset-top, 0px));
+                right: calc(15px + env(safe-area-inset-right, 0px));
+                min-width: 44px;
+                min-height: 44px;
             }
 
             .theme-toggle-track {
@@ -2892,12 +2960,33 @@
                 width: 14px;
                 height: 14px;
             }
+
+            /* Header responsive adjustments */
+            header {
+                min-height: 70px;
+                padding: 10px 15px;
+                padding-top: calc(10px + env(safe-area-inset-top, 0px));
+            }
+
+            header h1 {
+                font-size: clamp(0.8rem, 3.5vw, 1rem);
+            }
+
+            p.subtitle {
+                font-size: clamp(0.8rem, 2.5vw, 1rem);
+            }
+
+            body {
+                padding-top: calc(70px + env(safe-area-inset-top, 0px));
+            }
         }
 
         @media (max-width: 480px) {
             .theme-toggle {
-                top: 10px;
-                right: 10px;
+                top: calc(10px + env(safe-area-inset-top, 0px));
+                right: calc(10px + env(safe-area-inset-right, 0px));
+                min-width: 40px;
+                min-height: 40px;
             }
 
             .theme-toggle-track {
@@ -2919,6 +3008,62 @@
                 width: 12px;
                 height: 12px;
             }
+
+            /* Very small screen header */
+            header {
+                min-height: 60px;
+                padding: 8px 10px;
+                padding-top: calc(8px + env(safe-area-inset-top, 0px));
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            header h1 {
+                font-size: clamp(0.7rem, 2vw, 1rem);
+                padding: 2px 4px;
+            }
+
+            p.subtitle {
+                font-size: clamp(0.7rem, 2vw, 0.9rem);
+                padding: 2px 4px;
+            }
+
+            body {
+                padding-top: calc(60px + env(safe-area-inset-top, 0px));
+            }
+        }
+
+        /* iOS Safari specific fixes */
+        @supports (-webkit-touch-callout: none) {
+            /* Additional iOS Safari specific styles */
+            header {
+                -webkit-backdrop-filter: blur(20px);
+                backdrop-filter: blur(20px);
+                background-color: rgba(var(--surface-color-rgb, 255, 255, 255), 0.95);
+            }
+
+
+            header h1 {
+                font-size: clamp(1.1rem, 4vw, 1.4rem);
+            }
+
+
+            [data-theme="dark"] header {
+                background-color: rgba(26, 15, 15, 0.95);
+            }
+
+            .theme-toggle {
+                -webkit-backdrop-filter: blur(10px);
+                backdrop-filter: blur(10px);
+            }
+
+            /* Prevent zoom on form inputs */
+            input[type="text"],
+            input[type="search"],
+            select,
+            textarea {
+                font-size: 16px !important;
+            }
         }
 
         * {
@@ -2928,65 +3073,147 @@
         }
 
         body {
-            padding-top: 60px;
+            /* iOS Safari optimized body */
+            margin: 0;
+            padding: 0;
+            padding-top: calc(80px + env(safe-area-inset-top, 0px));
+
+            /* Font and layout */
             font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--background-color);
             color: var(--text-primary);
             line-height: 1.6;
-            font-size: 14px;
+            font-size: 12px;
+
+            /* iOS Safari specific optimizations */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+
+            /* Prevent zoom on input focus */
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+
+            /* Better scrolling on iOS */
+            -webkit-overflow-scrolling: touch;
+            overflow-x: hidden;
+
+            /* Safe area support */
+            padding-left: env(safe-area-inset-left, 0px);
+            padding-right: env(safe-area-inset-right, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
+
+            /* iOS Safari optimizations */
+            min-height: calc(100vh - 80px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+            padding-left: max(20px, env(safe-area-inset-left, 0px));
+            padding-right: max(20px, env(safe-area-inset-right, 0px));
+            padding-bottom: max(20px, env(safe-area-inset-bottom, 0px));
         }
 
         header {
-            text-align: center;
-            margin-top: 10px;
-            margin-bottom: 30px;
-            padding: 0;
-            border: 0;
-            font: inherit;
-            box-sizing: border-box;
-            display: flex;
-            align-content: stretch;
-            overflow: visible;
-            flex-direction: row;
-            flex-wrap: wrap;
-            background-color: var(--);
-            width: initial;
-            min-width: 0px;
-            min-height: 0px;
-            left: 10%;
-            right: auto;
-            top: 0px;
-            bottom: unset;
-            height: 100px;
-            max-height: calc(100% + 0px);
-            margin-right: auto;
-            margin-left: auto;
+            /* iOS Safari optimized header */
             position: fixed;
-            overflow: hidden;
-            z-index: 1050;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: auto;
+            min-height: 60px;f
+            max-height: 0px;
+            z-index: 100;
+
+            /* Layout improvements */
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-orient: horizontal;
+            -webkit-box-direction: normal;
+            -webkit-flex-direction: row;
+            -ms-flex-direction: row;
+            flex-direction: row;
+            align-items: flex-end;
+            justify-content: center;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            -ms-flex-pack: center;
+            -webkit-flex-wrap: nowrap;
+            -ms-flex-wrap: nowrap;
+            flex-wrap: nowrap;
+
+            /* Background and styling */
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 8px 15px;
+            margin: 0;
+            text-align: center;
+
+            /* iOS Safari specific fixes */
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+
+            /* Prevent overflow issues */
+            overflow: visible;
+
+            /* Safari safe area support */
+            padding-top: env(safe-area-inset-top, 8px);
+            padding-left: env(safe-area-inset-left, 15px);
+            padding-right: env(safe-area-inset-right, 15px);
         }
 
         header h1 {
-            padding: 5px 10px;
-            line-height: 60px;
-            font-size: 1.6rem;
+            /* iOS Safari optimized title */
+            margin: 0;
+            padding: 4px 8px;
+            line-height: 1.3;
             font-weight: 700;
-            vertical-align: baseline;
+            font-size: clamp(1.1rem, 4vw, 1.4rem);
             color: var(--text-primary);
+            white-space: nowrap;
+            text-overflow: ellipsis;
+
+            /* WebKit text rendering */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+
+            /* Prevent font scaling issues on iOS */
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            text-size-adjust: 100%;
         }
 
         p.subtitle {
-            padding: 5px 10px;
-            line-height: 60px;
-            vertical-align: baseline;
-            font-size: 1.2rem;
+            margin: 0;
+            padding: 4px 8px;
+            line-height: 1.3;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
             color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            /* WebKit text rendering */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+
+            /* Prevent font scaling issues on iOS */
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            text-size-adjust: 100%;
         }
 
         /* Dark mode header styling */
@@ -4293,10 +4520,6 @@
                 padding: 16px;
             }
 
-            header h1 {
-                font-size: 2rem;
-            }
-
             /* Controls Container Mobile */
             .controls-container {
                 flex-direction: column;
@@ -4469,10 +4692,6 @@
         }
 
         @media (max-width: 480px) {
-            header h1 {
-                font-size: 1.8rem;
-            }
-
             .tab-navigation {
                 margin-bottom: 16px;
             }
