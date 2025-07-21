@@ -2731,9 +2731,12 @@
             --warning-color: #d97706;
             --success-color: #059669;
             --background-color: #f8fafc;
-            --surface-color: #ffffff;
+            --surface-primary: #ffffff;
+            --surface-secondary: #e2e8f0;
+            --surface-accent: #00118F;
             --text-primary: #1e293b;
             --text-secondary: #64748b;
+            --text-accent: #eeeeee;
             --border-color: #e2e8f0;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
@@ -2750,9 +2753,12 @@
             --warning-color: #f59e0b;
             --success-color: #10b981;
             --background-color: #0f0a0a;
-            --surface-color: #1a0f0f;
+            --surface-primary: #1a0f0f;
+            --surface-secondary: #1f1c1c;
+            --surface-accent: #450a0a;
             --text-primary: #fecaca;
             --text-secondary: #fca5a5;
+            --text-accent: #dc2626;
             --border-color: #450a0a;
             --shadow-sm: 0 1px 2px 0 rgb(139 0 0 / 0.3);
             --shadow-md: 0 4px 6px -1px rgb(139 0 0 / 0.3), 0 2px 4px -2px rgb(139 0 0 / 0.3);
@@ -2915,7 +2921,7 @@
             cursor: pointer;
             padding: 4px;
             border-radius: 50px;
-            background-color: var(--surface-color);
+            background-color: var(--surface-primary);
             border: 2px solid var(--border-color);
             box-shadow: var(--shadow-lg);
             transition: var(--transition);
@@ -2966,7 +2972,7 @@
         .theme-toggle-thumb {
             width: 28px;
             height: 28px;
-            background: var(--surface-color);
+            background: var(--surface-primary);
             border-radius: 50%;
             position: absolute;
             top: 2px;
@@ -3043,7 +3049,7 @@
         }
 
         [data-theme="dark"] .pagination-container {
-            background-color: var(--surface-color);
+            background-color: var(--surface-primary);
         }
 
         [data-theme="dark"] th {
@@ -3327,7 +3333,7 @@
             header {
                 -webkit-backdrop-filter: blur(20px);
                 backdrop-filter: blur(20px);
-                background-color: rgba(var(--surface-color-rgb, 255, 255, 255), 0.95);
+                background-color: rgba(var(--surface-primary-rgb, 255, 255, 255), 0.95);
             }
 
 
@@ -3412,7 +3418,7 @@
             left: 0;
             right: 0;
             width: 100%;
-            height: auto;
+            height: 100px;
             min-height: 60px;
             max-height: 80px;
             z-index: 100;
@@ -3434,8 +3440,7 @@
             flex-wrap: nowrap;
 
             /* Background and styling */
-            background-color: var(--surface-color);
-            border-bottom: 1px solid var(--border-color);
+            background-color: var(--surface-accent);
             padding: 8px 15px;
             margin: 0;
             text-align: center;
@@ -3456,16 +3461,17 @@
         }
 
         header > * {
-            margin: 10px 10px;
-            padding: 0;
+            margin: 10px;
+            padding-bottom: 10px;
         }
 
         header h1 {
+            margin: 10px 20px;
             /* iOS Safari optimized title */
             line-height: 1.3;
             font-weight: 700;
             font-size: clamp(1.1rem, 4vw, 1.4rem);
-            color: var(--text-primary);
+            color: var(--text-accent);
             white-space: nowrap;
             text-overflow: ellipsis;
 
@@ -3508,7 +3514,7 @@
         /* Trending Politicians Slider */
         .trending-slider-container {
             margin-bottom: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--surface-secondary);
             border-radius: var(--border-radius);
             padding: 40px 24px;
             box-shadow: var(--shadow-lg);
@@ -3537,13 +3543,12 @@
         .trending-header h2 {
             font-size: 2.2rem;
             font-weight: 700;
-            color: white;
             margin-bottom: 12px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .trending-header p {
-            color: rgba(255, 255, 255, 0.9);
+            color: var(--text-primary);
             font-size: 1.2rem;
             font-weight: 500;
         }
@@ -3936,7 +3941,7 @@
             gap: 4px;
             margin-bottom: 24px;
             padding: 4px;
-            background-color: var(--surface-color);
+            background-color: var(--surface-primary);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-sm);
         }
@@ -4000,7 +4005,7 @@
             border: 2px solid var(--border-color);
             border-radius: var(--border-radius);
             font-size: 1rem;
-            background-color: var(--surface-color);
+            background-color: var(--surface-primary);
             transition: var(--transition);
         }
 
@@ -4041,7 +4046,7 @@
             color: var(--text-primary);
             border: 2px solid var(--border-color);
             border-radius: var(--border-radius);
-            background-color: var(--surface-color);
+            background-color: var(--surface-primary);
             font-size: 0.9rem;
             transition: var(--transition);
         }
@@ -4062,7 +4067,7 @@
         .view-toggle-group {
             display: flex;
             gap: 4px;
-            background: var(--surface-color);
+            background: var(--surface-primary);
             padding: 4px;
             border-radius: var(--border-radius);
             border: 2px solid var(--border-color);
@@ -4186,7 +4191,7 @@
 
         .stat-card {
             flex: 1;
-            background-color: var(--surface-color);
+            background-color: var(--surface-primary);
             padding: 16px;
             border-radius: var(--border-radius);
             text-align: center;
@@ -4232,7 +4237,7 @@
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 24px;
             padding: 24px;
-            background-color: var(--surface-color);
+            background-color: var(--surface-primary);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-md);
             border: 1px solid var(--border-color);
@@ -4244,7 +4249,7 @@
         }
 
         .grid-item {
-            background: var(--surface-color);
+            background: var(--surface-primary);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
             padding: 0;
@@ -4492,7 +4497,7 @@
             align-items: center;
             gap: 6px;
             padding: 8px 12px;
-            background: var(--surface-color);
+            background: var(--surface-primary);
             border: 1px solid var(--border-color);
             border-radius: 6px;
             cursor: pointer;
@@ -4528,7 +4533,7 @@
             justify-content: center;
             width: 36px;
             height: 36px;
-            background: var(--surface-color);
+            background: var(--surface-primary);
             border: 1px solid var(--border-color);
             border-radius: 6px;
             cursor: pointer;
@@ -4564,7 +4569,7 @@
 
         /* Table Styles */
         .table-container {
-            background-color: var(--surface-color);
+            background-color: var(--surface-primary);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-md);
             overflow: hidden;
@@ -5824,7 +5829,7 @@
             max-width: 1200px;
             height: 90vh;
             max-height: 800px;
-            background: var(--surface-color);
+            background: var(--surface-primary);
             border-radius: 24px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
             transform: scale(0.9) translateY(50px);
@@ -5867,7 +5872,7 @@
             height: 100%;
             -ms-overflow-style: none;
             scrollbar-width: none;
-            background: var(--surface-color);
+            background: var(--surface-primary);
         }
 
         .modal-image-section {
@@ -5957,7 +5962,7 @@
         .modal-header {
             padding: 30px 30px 20px;
             border-bottom: 1px solid var(--border-color);
-            background: var(--surface-color);
+            background: var(--surface-primary);
         }
 
         .modal-header h2 {
@@ -6002,7 +6007,7 @@
 
         .modal-tab.active {
             color: var(--accent-color);
-            background: var(--surface-color);
+            background: var(--surface-primary);
         }
 
         .modal-tab::after {
@@ -6118,7 +6123,7 @@
             padding: 12px 16px;
             border: 2px solid var(--border-color);
             border-radius: 12px;
-            background: var(--surface-color);
+            background: var(--surface-primary);
             color: var(---text-primary);
             font-family: inherit;
             font-size: 14px;
@@ -6204,7 +6209,7 @@
         }
 
         .comment-item {
-            background: var(--surface-color);
+            background: var(--surface-primary);
             padding: 20px;
             border-radius: 12px;
             margin-bottom: 15px;
@@ -6319,7 +6324,7 @@
 
         /* Dark mode adjustments for modal */
         [data-theme="dark"] .modal-container {
-            background: var(--surface-color);
+            background: var(--surface-primary);
             border-color: var(--border-color);
         }
 
@@ -6431,7 +6436,7 @@
 
         /* Footer Styles */
         .site-footer {
-            background-color: var(--surface-color);
+            background-color: var(--surface-primary);
             border-top: 1px solid var(--border-color);
             margin-top: 60px;
             padding: 40px 0 30px;
